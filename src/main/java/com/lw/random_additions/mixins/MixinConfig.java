@@ -1,4 +1,4 @@
-package com.lw.random_additions.mixin;
+package com.lw.random_additions.mixins;
 
 import net.minecraftforge.fml.common.Loader;
 import zone.rong.mixinbooter.ILateMixinLoader;
@@ -15,6 +15,7 @@ public class MixinConfig implements ILateMixinLoader {
 
     static {
         addModdedMixinCFG("mixins.random_additions.thaumcraft.json", "thaumcraft");
+        addModdedMixinCFG("mixins.random_additions.thaumicadditions.json", "thaumadditions");
     }
 
     @Override

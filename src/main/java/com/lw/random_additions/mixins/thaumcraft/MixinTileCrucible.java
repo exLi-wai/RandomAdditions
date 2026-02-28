@@ -1,4 +1,4 @@
-package com.lw.random_additions.mixin.thaumcraft;
+package com.lw.random_additions.mixins.thaumcraft;
 
 import com.lw.random_additions.config.RandomAdditionsConfig;
 import net.minecraft.item.ItemStack;

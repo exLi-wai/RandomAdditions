@@ -1,5 +1,5 @@
 {
-	"package": "com.lw.random_additions.mixin.thaumcraft",
+	"package": "com.lw.random_additions.mixins.thaumcraft",
 	"required": true,
 	"refmap": "${mixin_refmap}",
 	"target": "@env(DEFAULT)",
