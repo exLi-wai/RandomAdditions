@@ -1,4 +1,4 @@
-package com.lw.random_additions.cilent.handler;
+package com.lw.random_additions.integration.top;
 
 import appeng.api.AEApi;
 import appeng.api.networking.IGrid;

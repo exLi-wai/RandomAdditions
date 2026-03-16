@@ -1,6 +1,7 @@
-package com.lw.random_additions.common.handler;
+package com.lw.random_additions.cilent.handler;
 
-import com.lw.random_additions.cilent.handler.WirelessInput;
+import com.lw.random_additions.network.NetworkHandler;
+import com.lw.random_additions.network.WirelessInput;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;

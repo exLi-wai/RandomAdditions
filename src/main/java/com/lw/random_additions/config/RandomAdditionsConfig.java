@@ -1,7 +1,6 @@
 package com.lw.random_additions.config;
 
 import com.lw.random_additions.Tags;
-import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;

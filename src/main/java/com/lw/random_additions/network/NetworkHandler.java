@@ -1,6 +1,5 @@
-package com.lw.random_additions.common.handler;
+package com.lw.random_additions.network;
 
-import com.lw.random_additions.cilent.handler.WirelessInput;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;

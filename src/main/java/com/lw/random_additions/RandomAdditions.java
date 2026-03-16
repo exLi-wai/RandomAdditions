@@ -1,8 +1,8 @@
 package com.lw.random_additions;
 
-import com.lw.random_additions.cilent.handler.MEStorageInfoProvider;
-import com.lw.random_additions.common.handler.KeyHandler;
-import com.lw.random_additions.common.handler.NetworkHandler;
+import com.lw.random_additions.integration.top.MEStorageInfoProvider;
+import com.lw.random_additions.cilent.handler.KeyHandler;
+import com.lw.random_additions.network.NetworkHandler;
 import mcjty.theoneprobe.TheOneProbe;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
