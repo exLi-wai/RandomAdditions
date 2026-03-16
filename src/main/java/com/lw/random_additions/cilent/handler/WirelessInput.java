@@ -2,6 +2,7 @@ package com.lw.random_additions.cilent.handler;
 
 import baubles.api.BaublesApi;
 
+import com.lw.random_additions.util.aeUtil;
 import io.netty.buffer.ByteBuf;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;
@@ -123,34 +124,11 @@ public class WirelessInput implements IMessage {
         }
 
         private boolean findAndDeposit(EntityPlayer player, ItemStack toDeposit) {
-            ItemStack offhand = player.getHeldItemOffhand();
-
-            for (int i = 0; i < player.inventory.getSizeInventory(); i++) {
-                ItemStack terminal = player.inventory.getStackInSlot(i);
-                if (tryDepositWithTerminal(player, terminal, toDeposit)) {
-                    return true;
-                }
+            ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
+            if (terminal.isEmpty()) {
+                return false;
             }
-
-            if (tryDepositWithTerminal(player, offhand, toDeposit)) {
-                return true;
-            }
-
-            if (Loader.isModLoaded("baubles")) {
-                return checkBaubles(player, toDeposit);
-            }
-            return false;
-        }
-
-        @Optional.Method(modid = "baubles")
-        private boolean checkBaubles(EntityPlayer player, ItemStack toDeposit) {
-            for (int i = 0; i < BaublesApi.getBaublesHandler(player).getSlots(); i++) {
-                ItemStack terminal = BaublesApi.getBaublesHandler(player).getStackInSlot(i);
-                if (tryDepositWithTerminal(player, terminal, toDeposit)) {
-                    return true;
-                }
-            }
-            return false;
+            return tryDepositWithTerminal(player, terminal, toDeposit);
         }
 
         private boolean tryDepositWithTerminal(EntityPlayer player, ItemStack terminal, ItemStack toDeposit) {
@@ -161,22 +139,9 @@ public class WirelessInput implements IMessage {
         }
 
         private boolean depositToNetwork(EntityPlayer player, ItemStack terminal, ItemStack toDeposit, BlockPos terminalPos) {
-
             IWirelessTermRegistry registry = AEApi.instance().registries().wireless();
             IWirelessTermHandler handler = registry.getWirelessTerminalHandler(terminal);
-            String encryptionKey = handler.getEncryptionKey(terminal);
-            long parsedKey;
-
-            if (!registry.isWirelessTerminal(terminal)) {
-                return false;
-            }
-
             if (handler == null) {
-                return false;
-            }
-
-            if (encryptionKey.isEmpty()) {
-                player.sendMessage(PlayerMessages.DeviceNotLinked.get());
                 return false;
             }
 
@@ -185,45 +150,13 @@ public class WirelessInput implements IMessage {
                 return false;
             }
 
-            try {
-                parsedKey = Long.parseLong(encryptionKey);
-            } catch (NumberFormatException e) {
-                return false;
-            }
-
-            ILocatable securityStation = AEApi.instance().registries().locatable().getLocatableBy(parsedKey);
-            TileSecurityStation t = (TileSecurityStation) securityStation;
-
-            if (!(securityStation instanceof TileSecurityStation)) {
-                return false;
-            }
-
-            WirelessTerminalGuiObject obj = new WirelessTerminalGuiObject(
-                    (ToolWirelessTerminal) terminal.getItem(),
-                    terminal,
-                    player,
-                    player.world,
-                    terminalPos.getX(),
-                    terminalPos.getY(),
-                    terminalPos.getZ()
-            );
-
-            if (!obj.rangeCheck()) {
-                player.sendMessage(PlayerMessages.OutOfRange.get());
-                return false;
-            }
-
-            IGridNode gridNode = obj.getActionableNode();
-            if (gridNode == null) {
-                return false;
-            }
-
-            IGrid grid = gridNode.getGrid();
+            IGrid grid = aeUtil.getGridFromTerminal(terminal, player, terminalPos);
             if (grid == null) {
+                player.sendMessage(PlayerMessages.DeviceNotLinked.get());
                 return false;
             }
 
-            if (!securityCheck(player, grid, SecurityPermissions.INJECT)) {
+            if (!aeUtil.securityCheck(player, grid, SecurityPermissions.INJECT)) {
                 return false;
             }
 
@@ -232,6 +165,19 @@ public class WirelessInput implements IMessage {
                 return false;
             }
 
+            String encryptionKey = handler.getEncryptionKey(terminal);
+            long parsedKey;
+            try {
+                parsedKey = Long.parseLong(encryptionKey);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            ILocatable securityStation = AEApi.instance().registries().locatable().getLocatableBy(parsedKey);
+            if (!(securityStation instanceof TileSecurityStation)) {
+                return false;
+            }
+            TileSecurityStation t = (TileSecurityStation) securityStation;
+
             AEItemStack aeItemStack = AEItemStack.fromItemStack(toDeposit);
             if (aeItemStack == null) {
                 return false;
@@ -239,7 +185,6 @@ public class WirelessInput implements IMessage {
 
             IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
             IMEInventory<IAEItemStack> inventory = storageGrid.getInventory(channel);
-
             if (inventory == null) {
                 return false;
             }
@@ -257,11 +202,6 @@ public class WirelessInput implements IMessage {
                 return true;
             }
             return false;
-        }
-
-        private boolean securityCheck(EntityPlayer player, IGrid grid, SecurityPermissions permission) {
-            ISecurityGrid securityGrid = grid.getCache(ISecurityGrid.class);
-            return securityGrid != null && securityGrid.hasPermission(player, permission);
         }
     }
 }

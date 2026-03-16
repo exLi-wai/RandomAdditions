@@ -8,7 +8,7 @@ import net.minecraftforge.fml.relauncher.Side;
 public class NetworkHandler {
 
     private static int packetId = 0;
-    public static final SimpleNetworkWrapper WirelessDeposit = NetworkRegistry.INSTANCE.newSimpleChannel("ae2top");
+    public static final SimpleNetworkWrapper WirelessDeposit = NetworkRegistry.INSTANCE.newSimpleChannel("random_additions:wireless_input");
 
     public static void registerPackets() {
         WirelessDeposit.registerMessage(
