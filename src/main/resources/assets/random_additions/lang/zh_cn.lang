@@ -1,6 +1,6 @@
 key.random_additions=随意添加
 key.random_additions.wireless_input=将手持物品存储至ME网络
 random_additions.me_storage.count=ME网络存储数量: %s
-random_additions.fluid_storage.count=ME网络流体储量: %s %s
+random_additions.fluid_storage.count=ME网络存储数量: %s %s
 random_additions.me_storage.craftable=[可合成]
 random_additions.me_grid.node_count=ME网络节点数量: %s
