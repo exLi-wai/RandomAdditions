@@ -2,3 +2,5 @@ key.random_additions=RandomAdditions
 key.random_additions.wireless_input=Stow stack in hand into ME System
 random_additions.me_storage.count=ME network storage: %s
 random_additions.fluid_storage.count=ME fluid storage: %s %s
+random_additions.me_storage.craftable=[Synthetic]
+random_additions.me_grid.node_count=ME network nodes: %s

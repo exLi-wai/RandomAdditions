@@ -1,6 +1,6 @@
-package com.lw.random_additions.network;
+package com.lw.random_additions.common.network;
 
-import com.lw.random_additions.util.aeUtil;
+import com.lw.random_additions.common.util.aeUtil;
 import io.netty.buffer.ByteBuf;
 import appeng.api.AEApi;
 import appeng.api.config.Actionable;

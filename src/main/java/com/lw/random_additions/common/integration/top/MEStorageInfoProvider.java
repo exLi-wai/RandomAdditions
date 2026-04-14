@@ -1,4 +1,4 @@
-package com.lw.random_additions.integration.top;
+package com.lw.random_additions.common.integration.top;
 
 import appeng.api.AEApi;
 import appeng.api.networking.IGrid;
@@ -13,7 +13,7 @@ import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
-import com.lw.random_additions.util.aeUtil;
+import com.lw.random_additions.common.util.aeUtil;
 import mcjty.theoneprobe.api.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
@@ -35,40 +35,48 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
 
     @Override
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData iProbeHitData) {
+        ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
+        if (terminal.isEmpty()) return;
+    
+        IGrid grid = aeUtil.getGridFromTerminal(terminal, player, player.getPosition());
+        if (grid == null) return;
+    
         long count = 0;
         String displayUnit = "";
-
-        ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
-
-        if (!terminal.isEmpty()) {
-            IGrid grid = aeUtil.getGridFromTerminal(terminal, player, player.getPosition());
-            if (grid != null) {
-                if (isFluidBlock(blockState)) {
-
-                    Fluid fluid = getFluidFromBlock(blockState);
-
-                    if (fluid != null) {
-                        count = getFluidCountInGrid(grid, fluid);
-                        displayUnit = "mB";
-
-                    }
-                } else {
-                    ItemStack targetStack = getTargetItemStack(world, blockState, iProbeHitData);
-                    if (!targetStack.isEmpty()) {
-                        count = getItemCountInGridByItemStack(grid, targetStack);
-                        displayUnit = "";
-                    }
-                }
+        ItemStack targetStack = null;
+    
+        if (isFluidBlock(blockState)) {
+            Fluid fluid = getFluidFromBlock(blockState);
+            if (fluid != null) {
+                count = getFluidCountInGrid(grid, fluid);
+                displayUnit = "mB";
             }
+        } else {
+            targetStack = iProbeHitData.getPickBlock();
+            if (targetStack == null || targetStack.isEmpty()) {
+                targetStack = getTargetItemStack(world, blockState, iProbeHitData);
+            }
+            if (!targetStack.isEmpty()) {
+                count = getItemCountInGridByItemStack(grid, targetStack);
+            }
+        }
+    
+        StringBuilder infoBuilder = new StringBuilder();
+
+        if (!isFluidBlock(blockState)&& !targetStack.isEmpty() && aeUtil.isCraftable(grid, targetStack)) {
+            String isCraftable = new TextComponentTranslation("random_additions.me_storage.craftable").getFormattedText();
+            infoBuilder.append(TextStyleClass.INFO).append(isCraftable).append(" ");
         }
 
         if (displayUnit.isEmpty()) {
-            String info = new TextComponentTranslation("random_additions.me_storage.count", count).getFormattedText();
-            iProbeInfo.text(TextStyleClass.INFO + info);
+            String countInfo = new TextComponentTranslation("random_additions.me_storage.count", count).getFormattedText();
+            infoBuilder.append(TextStyleClass.INFO).append(countInfo);
         } else {
-            String info = new TextComponentTranslation("random_additions.fluid_storage.count", String.format("%.2f", (double)count), displayUnit).getFormattedText();
-            iProbeInfo.text(TextStyleClass.INFO + info);
+            String fluidInfo = new TextComponentTranslation("random_additions.fluid_storage.count", String.format("%.2f", (double) count), displayUnit).getFormattedText();
+            infoBuilder.append(TextStyleClass.INFO).append(fluidInfo);
         }
+    
+        iProbeInfo.text(infoBuilder.toString());
     }
 
     private ItemStack getTargetItemStack(World world, IBlockState state, IProbeHitData hitData) {
@@ -160,6 +168,5 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         }
         return null;
     }
-
 }
 

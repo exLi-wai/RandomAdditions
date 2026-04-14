@@ -1,4 +1,4 @@
-package com.lw.random_additions.util;
+package com.lw.random_additions.common.util;
 
 import appeng.api.AEApi;
 import appeng.api.config.SecurityPermissions;
@@ -6,15 +6,22 @@ import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
 import appeng.api.features.IWirelessTermRegistry;
 import appeng.api.networking.IGrid;
+import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
+import appeng.api.networking.crafting.ICraftingGrid;
+import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.security.ISecurityGrid;
+import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.data.IAEItemStack;
 import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.tile.misc.TileSecurityStation;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
+import com.google.common.collect.ImmutableCollection;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fml.common.Loader;
 
@@ -98,5 +105,34 @@ public class aeUtil {
     public static boolean securityCheck(EntityPlayer player, IGrid grid, SecurityPermissions permission) {
         ISecurityGrid securityGrid = grid.getCache(ISecurityGrid.class);
         return securityGrid != null && securityGrid.hasPermission(player, permission);
+    }
+
+    public static boolean isCraftable(IGrid grid, ItemStack stack) {
+        try {
+            ICraftingGrid craftingGrid = grid.getCache(ICraftingGrid.class);
+            if (stack.isEmpty()) return false;
+
+            IAEItemStack aeStack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class)
+                    .createStack(stack);
+
+            ImmutableCollection<ICraftingPatternDetails> patterns = craftingGrid.getCraftingFor(aeStack, null, 1, null);
+
+            return patterns != null && !patterns.isEmpty();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+    @Nullable
+    public static IGrid getGridFromBlock(TileEntity tileEntity) {
+        if (tileEntity == null) return null;
+
+        if (!(tileEntity instanceof IGridHost)) return null;
+
+        IGridHost gridHost = (IGridHost) tileEntity;
+        IGridNode node = gridHost.getGridNode(null);
+
+        return node != null ? node.getGrid() : null;
     }
 }

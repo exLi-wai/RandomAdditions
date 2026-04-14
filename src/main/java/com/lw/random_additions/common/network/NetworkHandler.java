@@ -1,4 +1,4 @@
-package com.lw.random_additions.network;
+package com.lw.random_additions.common.network;
 
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;

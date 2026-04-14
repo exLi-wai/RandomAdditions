@@ -1,4 +1,4 @@
-package com.lw.random_additions.config;
+package com.lw.random_additions.common.config;
 
 import com.lw.random_additions.Tags;
 import net.minecraft.item.ItemStack;
@@ -30,7 +30,6 @@ public class RandomAdditionsConfig {
             "minecraft:dirt",
             "minecraft:grass"
     };
-
     public static boolean crucibleWhitelist(ItemStack item) {
         for (String itemId : CrucibleInsolubleWhitelist) {
             if (item.getItem().getRegistryName().toString().equals(itemId)) {

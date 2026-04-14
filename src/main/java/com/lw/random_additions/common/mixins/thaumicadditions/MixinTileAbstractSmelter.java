@@ -1,6 +1,6 @@
-package com.lw.random_additions.mixins.thaumicadditions;
+package com.lw.random_additions.common.mixins.thaumicadditions;
 
-import com.lw.random_additions.config.RandomAdditionsConfig;
+import com.lw.random_additions.common.config.RandomAdditionsConfig;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

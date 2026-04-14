@@ -1,4 +1,4 @@
-package com.lw.random_additions.mixins;
+package com.lw.random_additions.common.integration.mixins;
 
 import net.minecraftforge.fml.common.Loader;
 import zone.rong.mixinbooter.ILateMixinLoader;

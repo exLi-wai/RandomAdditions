@@ -1,5 +1,5 @@
 {
-  "package": "com.lw.random_additions.mixins.thaumicadditions",
+  "package": "com.lw.random_additions.common.mixins.thaumicadditions",
   "required": true,
   "refmap": "${mixin_refmap}",
   "target": "@env(DEFAULT)",
