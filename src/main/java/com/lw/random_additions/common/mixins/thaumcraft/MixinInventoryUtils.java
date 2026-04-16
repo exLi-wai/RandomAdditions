@@ -1,5 +1,6 @@
 package com.lw.random_additions.common.mixins.thaumcraft;
 
+import com.lw.random_additions.common.config.RandomAdditionsConfig;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,11 +18,15 @@ public class MixinInventoryUtils {
             cancellable = true,
             remap = false
     )
+
     private static void checkEnchantedPlaceholder(ItemStack stack, ItemStack stack2, CallbackInfoReturnable<Boolean> cir) {
-        if (stack != null && !stack.isEmpty() && stack2 != null && !stack2.isEmpty()) {
-            if (stack.getItem() instanceof ToolCore || stack2.getItem() instanceof ToolCore) {
-                cir.setReturnValue(false);
+        if(RandomAdditionsConfig.checkEnchantedPlaceholder){
+            if (stack != null && !stack.isEmpty() && stack2 != null && !stack2.isEmpty()) {
+                if (stack.getItem() instanceof ToolCore || stack2.getItem() instanceof ToolCore) {
+                    cir.setReturnValue(false);
+                }
             }
         }
+
     }
 }

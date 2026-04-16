@@ -30,6 +30,11 @@ public class RandomAdditionsConfig {
             "minecraft:dirt",
             "minecraft:grass"
     };
+
+    @Config.Name("魔导手册是否可提交匠魂工具")
+    @Config.RequiresMcRestart
+    public static boolean checkEnchantedPlaceholder = true;
+
     public static boolean crucibleWhitelist(ItemStack item) {
         for (String itemId : CrucibleInsolubleWhitelist) {
             if (item.getItem().getRegistryName().toString().equals(itemId)) {
