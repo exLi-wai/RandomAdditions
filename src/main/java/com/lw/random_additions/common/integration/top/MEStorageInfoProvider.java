@@ -65,7 +65,7 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
 
         if (!isFluidBlock(blockState)&& !targetStack.isEmpty() && aeUtil.isCraftable(grid, targetStack)) {
             String isCraftable = new TextComponentTranslation("random_additions.me_storage.craftable").getFormattedText();
-            infoBuilder.append(TextStyleClass.INFO).append(isCraftable).append(" ");
+            infoBuilder.append(TextStyleClass.OK).append(isCraftable).append(" ");
         }
 
         if (displayUnit.isEmpty()) {

@@ -17,7 +17,6 @@ public class ClientProxy extends CommonProxy {
         super.preInit(event);
         KeyHandler.init();
         MinecraftForge.EVENT_BUS.register(new KeyHandler());
-        MinecraftForge.EVENT_BUS.register(this);
         TheOneProbe.theOneProbeImp.registerProvider(new MEStorageInfoProvider());
         TheOneProbe.theOneProbeImp.registerProvider(new MEGirdNodeAmount());
     }

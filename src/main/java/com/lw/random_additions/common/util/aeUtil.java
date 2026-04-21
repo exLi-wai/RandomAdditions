@@ -123,16 +123,4 @@ public class aeUtil {
         }
     }
 
-
-    @Nullable
-    public static IGrid getGridFromBlock(TileEntity tileEntity) {
-        if (tileEntity == null) return null;
-
-        if (!(tileEntity instanceof IGridHost)) return null;
-
-        IGridHost gridHost = (IGridHost) tileEntity;
-        IGridNode node = gridHost.getGridNode(null);
-
-        return node != null ? node.getGrid() : null;
-    }
 }
