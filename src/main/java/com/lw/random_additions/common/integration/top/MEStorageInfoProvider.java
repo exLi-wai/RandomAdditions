@@ -7,24 +7,29 @@ import appeng.api.parts.IPart;
 import appeng.api.parts.IPartHost;
 import appeng.api.parts.PartItemStack;
 import appeng.api.storage.IMEMonitor;
-import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.channels.IItemStorageChannel;
-import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
+import com.lw.random_additions.Tags;
 import com.lw.random_additions.common.util.aeUtil;
 import mcjty.theoneprobe.api.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraft.world.World;
+import net.minecraftforge.event.entity.player.ItemTooltipEvent;
 import net.minecraftforge.fluids.*;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class MEStorageInfoProvider implements IProbeInfoProvider {
 
@@ -48,7 +53,7 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         if (isFluidBlock(blockState)) {
             Fluid fluid = getFluidFromBlock(blockState);
             if (fluid != null) {
-                count = getFluidCountInGrid(grid, fluid);
+                count = aeUtil.getFluidCountInGrid(grid, fluid);
                 displayUnit = "mB";
             }
         } else {
@@ -79,7 +84,7 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         iProbeInfo.text(infoBuilder.toString());
     }
 
-    private ItemStack getTargetItemStack(World world, IBlockState state, IProbeHitData hitData) {
+    private static ItemStack getTargetItemStack(World world, IBlockState state, IProbeHitData hitData) {
         Block block = state.getBlock();
         TileEntity te = world.getTileEntity(hitData.getPos());
 
@@ -94,18 +99,26 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         return block.getItem(world, hitData.getPos(), state);
     }
 
-    private long getItemCountInGridByItemStack(IGrid grid, ItemStack targetStack) {
-        long total = 0;
-
-        if (targetStack.isEmpty()) return 0;
-
+    /**
+     * 获取物品存储列表
+     */
+    private static IItemList<IAEItemStack> getItemStorageList(IGrid grid) {
+        if (grid == null) return null;
+        
         IStorageGrid storage = grid.getCache(IStorageGrid.class);
         IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
         IMEMonitor<IAEItemStack> monitor = storage.getInventory(channel);
+        
+        return monitor != null ? monitor.getStorageList() : null;
+    }
 
-        if (monitor == null) return 0;
+    public static long getItemCountInGridByItemStack(IGrid grid, ItemStack targetStack) {
+        if (targetStack.isEmpty()) return 0;
 
-        IItemList<IAEItemStack> list = monitor.getStorageList();
+        IItemList<IAEItemStack> list = getItemStorageList(grid);
+        if (list == null) return 0;
+
+        long total = 0;
 
         for (IAEItemStack aeStack : list) {
             ItemStack stack = aeStack.createItemStack();
@@ -116,30 +129,7 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         return total;
     }
 
-    private long getFluidCountInGrid(IGrid grid, Fluid targetFluid) {
-        long total = 0;
-
-        if (targetFluid == null) return 0;
-
-        IStorageGrid storage = grid.getCache(IStorageGrid.class);
-        IFluidStorageChannel fluidChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
-        IMEMonitor<IAEFluidStack> monitor = storage.getInventory(fluidChannel);
-
-        if (monitor == null) return 0;
-
-        IItemList<IAEFluidStack> fluidList = monitor.getStorageList();
-
-        for (IAEFluidStack aeFluidStack : fluidList) {
-            Fluid fluid = aeFluidStack.getFluid();
-            if (fluid == targetFluid) {
-
-                total += aeFluidStack.getStackSize();
-            }
-        }
-        return total;
-    }
-
-    private boolean isFluidBlock(IBlockState state) {
+    private static boolean isFluidBlock(IBlockState state) {
         Block block = state.getBlock();
 
         if (block instanceof BlockLiquid) return true;
@@ -148,7 +138,7 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         return state.getMaterial().isLiquid();
     }
 
-    private Fluid getFluidFromBlock(IBlockState state) {
+    private static Fluid getFluidFromBlock(IBlockState state) {
         Block block = state.getBlock();
 
         if (block instanceof IFluidBlock) {
@@ -167,6 +157,76 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
 
         }
         return null;
+    }
+
+    @Mod.EventBusSubscriber(modid = Tags.MOD_ID, value = Side.CLIENT)
+    public static class EventMEStorageTooltip {
+
+        @SubscribeEvent
+        @SideOnly(Side.CLIENT)
+        public static void onItemTooltip(ItemTooltipEvent event) {
+            EntityPlayer player = event.getEntityPlayer();
+            if (player == null) return;
+
+            ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
+            if (terminal == null || terminal.isEmpty()) return;
+
+            IGrid grid = aeUtil.getGridFromTerminal(terminal, player, player.getPosition());
+            if (grid == null) {
+                grid = aeUtil.getGridFromTerminalNBT(terminal, player);
+                if (grid == null) return;
+            }
+
+            ItemStack itemStack = event.getItemStack();
+            if (itemStack.isEmpty()) return;
+
+            StringBuilder tooltipText = new StringBuilder();
+
+            long count;
+            if (itemStack.hasTagCompound()) {
+                count = getItemCountWithNBT(grid, itemStack);
+            } else {
+                count = MEStorageInfoProvider.getItemCountInGridByItemStack(grid, itemStack);
+            }
+
+            if (aeUtil.isCraftable(grid, itemStack)) {
+                String isCraftable = I18n.format("random_additions.me_storage.craftable");
+                tooltipText.append("§a").append(isCraftable).append(" ");
+            }
+                
+            if (count > 0) {
+                String countInfo = I18n.format("random_additions.me_storage.count", count);
+                tooltipText.append("§7").append(countInfo);
+            }
+            
+            if (tooltipText.length() > 0) {
+                event.getToolTip().add(tooltipText.toString());
+            }
+        }
+
+        /**
+         * 匹配 NBT 然后计数
+         */
+        private static long getItemCountWithNBT(IGrid grid, ItemStack targetStack) {
+            if (targetStack.isEmpty() || !targetStack.hasTagCompound()) return 0;
+
+            IItemList<IAEItemStack> list = MEStorageInfoProvider.getItemStorageList(grid);
+            if (list == null) return 0;
+
+            long total = 0;
+
+            for (IAEItemStack aeStack : list) {
+                ItemStack stack = aeStack.createItemStack();
+                if (targetStack.getTagCompound() != null && stack.getItem() == targetStack.getItem() &&
+                        stack.getMetadata() == targetStack.getMetadata() &&
+                        stack.hasTagCompound() &&
+                        stack.getTagCompound().equals(targetStack.getTagCompound())) {
+                    total += aeStack.getStackSize();
+                }
+            }
+            return total;
+        }
+
     }
 }
 

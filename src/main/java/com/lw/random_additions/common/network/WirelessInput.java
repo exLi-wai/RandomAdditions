@@ -132,8 +132,7 @@ public class WirelessInput implements IMessage {
         }
 
         private boolean depositToNetwork(EntityPlayer player, ItemStack terminal, ItemStack toDeposit, BlockPos terminalPos) {
-            IWirelessTermRegistry registry = AEApi.instance().registries().wireless();
-            IWirelessTermHandler handler = registry.getWirelessTerminalHandler(terminal);
+            IWirelessTermHandler handler = aeUtil.getIWirelessTermRegistry().getWirelessTerminalHandler(terminal);
             if (handler == null) {
                 return false;
             }
@@ -154,9 +153,6 @@ public class WirelessInput implements IMessage {
             }
 
             IStorageGrid storageGrid = grid.getCache(IStorageGrid.class);
-            if (storageGrid == null) {
-                return false;
-            }
 
             String encryptionKey = handler.getEncryptionKey(terminal);
             long parsedKey;

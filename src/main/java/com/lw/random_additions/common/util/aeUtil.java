@@ -6,13 +6,17 @@ import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
 import appeng.api.features.IWirelessTermRegistry;
 import appeng.api.networking.IGrid;
-import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.api.networking.crafting.ICraftingGrid;
 import appeng.api.networking.crafting.ICraftingPatternDetails;
 import appeng.api.networking.security.ISecurityGrid;
+import appeng.api.networking.storage.IStorageGrid;
+import appeng.api.storage.IMEMonitor;
+import appeng.api.storage.channels.IFluidStorageChannel;
 import appeng.api.storage.channels.IItemStorageChannel;
+import appeng.api.storage.data.IAEFluidStack;
 import appeng.api.storage.data.IAEItemStack;
+import appeng.api.storage.data.IItemList;
 import appeng.helpers.WirelessTerminalGuiObject;
 import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.tile.misc.TileSecurityStation;
@@ -21,8 +25,8 @@ import baubles.api.cap.IBaublesItemHandler;
 import com.google.common.collect.ImmutableCollection;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nullable;
@@ -61,10 +65,9 @@ public class aeUtil {
     public static IGrid getGridFromTerminal(ItemStack terminal, EntityPlayer player, BlockPos pos) {
         if (terminal.isEmpty()) return null;
 
-        IWirelessTermRegistry registry = AEApi.instance().registries().wireless();
-        if (!registry.isWirelessTerminal(terminal)) return null;
+        if (!aeUtil.getIWirelessTermRegistry().isWirelessTerminal(terminal)) return null;
 
-        IWirelessTermHandler handler = registry.getWirelessTerminalHandler(terminal);
+        IWirelessTermHandler handler = aeUtil.getIWirelessTermRegistry().getWirelessTerminalHandler(terminal);
         if (handler == null) return null;
 
         String key = handler.getEncryptionKey(terminal);
@@ -104,7 +107,7 @@ public class aeUtil {
      */
     public static boolean securityCheck(EntityPlayer player, IGrid grid, SecurityPermissions permission) {
         ISecurityGrid securityGrid = grid.getCache(ISecurityGrid.class);
-        return securityGrid != null && securityGrid.hasPermission(player, permission);
+        return securityGrid.hasPermission(player, permission);
     }
 
     public static boolean isCraftable(IGrid grid, ItemStack stack) {
@@ -123,4 +126,58 @@ public class aeUtil {
         }
     }
 
+    public static IWirelessTermRegistry getIWirelessTermRegistry() {
+        return AEApi.instance().registries().wireless();
+    }
+
+    public static IGrid getGridFromTerminalNBT(ItemStack terminal, EntityPlayer player) {
+        try {
+            if (!aeUtil.getIWirelessTermRegistry().isWirelessTerminal(terminal)) return null;
+
+            IWirelessTermHandler handler = aeUtil.getIWirelessTermRegistry().getWirelessTerminalHandler(terminal);
+            if (handler == null) return null;
+
+            String key = handler.getEncryptionKey(terminal);
+            if (key == null || key.isEmpty()) return null;
+
+            long parsedKey = Long.parseLong(key);
+            ILocatable securityStation = AEApi.instance().registries().locatable().getLocatableBy(parsedKey);
+
+            if (!(securityStation instanceof TileSecurityStation)) return null;
+
+            TileSecurityStation station = (TileSecurityStation) securityStation;
+            IGridNode node = station.getGridNode(null);
+            return node != null ? node.getGrid() : null;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * 获取 ME 网络中的流体数量
+     */
+    public static long getFluidCountInGrid(IGrid grid, Fluid targetFluid) {
+        if (targetFluid == null) return 0;
+
+        try {
+            IStorageGrid storage = grid.getCache(IStorageGrid.class);
+            IFluidStorageChannel fluidChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
+            IMEMonitor<IAEFluidStack> monitor = storage.getInventory(fluidChannel);
+
+            if (monitor == null) return 0;
+
+            IItemList<IAEFluidStack> fluidList = monitor.getStorageList();
+            long total = 0;
+
+            for (IAEFluidStack aeFluidStack : fluidList) {
+                Fluid fluid = aeFluidStack.getFluid();
+                if (fluid == targetFluid) {
+                    total += aeFluidStack.getStackSize();
+                }
+            }
+            return total;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 }

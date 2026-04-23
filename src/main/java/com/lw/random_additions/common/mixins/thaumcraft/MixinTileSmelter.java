@@ -13,7 +13,8 @@ public class MixinTileSmelter {
     @Inject(
             method = "canSmelt",
             at = @At("HEAD"),
-            cancellable = true
+            cancellable = true,
+            remap = false
     )
     private void onCanSmelt(CallbackInfoReturnable<Boolean> cir) {
         ItemStack stack = ((TileSmelter)(Object)this).getStackInSlot(0);

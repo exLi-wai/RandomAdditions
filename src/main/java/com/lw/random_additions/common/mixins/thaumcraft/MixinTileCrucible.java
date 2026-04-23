@@ -19,7 +19,8 @@ public class MixinTileCrucible {
                     shift = At.Shift.BY,
                     by = 2
             ),
-            name = "ot"
+            name = "ot",
+            remap = false
     )
     public AspectList onAttemptSmelt(AspectList original, ItemStack item){
         if (RandomAdditionsConfig.crucibleWhitelist(item)) {
