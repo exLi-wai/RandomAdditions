@@ -221,9 +221,14 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
             IItemList<IAEItemStack> list = MEStorageInfoProvider.getItemStorageList(grid);
             if (list == null) return 0;
 
+            List<IAEItemStack> snapshot = new ArrayList<>();
+            for (IAEItemStack stack : list) {
+                snapshot.add(stack);
+            }
+
             long total = 0;
 
-            for (IAEItemStack aeStack : list) {
+            for (IAEItemStack aeStack : snapshot) {
                 ItemStack stack = aeStack.createItemStack();
                 if (targetStack.getTagCompound() != null && stack.getItem() == targetStack.getItem() &&
                         stack.getMetadata() == targetStack.getMetadata() &&

@@ -23,6 +23,9 @@ import appeng.tile.misc.TileSecurityStation;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
 import com.google.common.collect.ImmutableCollection;
+
+import java.util.ArrayList;
+import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -167,9 +170,15 @@ public class aeUtil {
             if (monitor == null) return 0;
 
             IItemList<IAEFluidStack> fluidList = monitor.getStorageList();
+
+            List<IAEFluidStack> snapshot = new ArrayList<>();
+            for (IAEFluidStack stack : fluidList) {
+                snapshot.add(stack);
+            }
+
             long total = 0;
 
-            for (IAEFluidStack aeFluidStack : fluidList) {
+            for (IAEFluidStack aeFluidStack : snapshot) {
                 Fluid fluid = aeFluidStack.getFluid();
                 if (fluid == targetFluid) {
                     total += aeFluidStack.getStackSize();
