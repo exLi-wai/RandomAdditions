@@ -31,6 +31,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MEStorageInfoProvider implements IProbeInfoProvider {
 
     @Override
@@ -118,9 +121,14 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         IItemList<IAEItemStack> list = getItemStorageList(grid);
         if (list == null) return 0;
 
+        List<IAEItemStack> snapshot = new ArrayList<>();
+        for(IAEItemStack stack :list){
+            snapshot.add(stack);
+        }
+
         long total = 0;
 
-        for (IAEItemStack aeStack : list) {
+        for (IAEItemStack aeStack : snapshot) {
             ItemStack stack = aeStack.createItemStack();
             if (stack.getItem() == targetStack.getItem() && stack.getMetadata() == targetStack.getMetadata()) {
                 total += aeStack.getStackSize();
