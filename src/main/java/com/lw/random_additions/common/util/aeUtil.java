@@ -68,8 +68,6 @@ public class aeUtil {
     public static IGrid getGridFromTerminal(ItemStack terminal, EntityPlayer player, BlockPos pos) {
         if (terminal.isEmpty()) return null;
 
-        if (!aeUtil.getIWirelessTermRegistry().isWirelessTerminal(terminal)) return null;
-
         IWirelessTermHandler handler = aeUtil.getIWirelessTermRegistry().getWirelessTerminalHandler(terminal);
         if (handler == null) return null;
 
@@ -135,8 +133,6 @@ public class aeUtil {
 
     public static IGrid getGridFromTerminalNBT(ItemStack terminal, EntityPlayer player) {
         try {
-            if (!aeUtil.getIWirelessTermRegistry().isWirelessTerminal(terminal)) return null;
-
             IWirelessTermHandler handler = aeUtil.getIWirelessTermRegistry().getWirelessTerminalHandler(terminal);
             if (handler == null) return null;
 

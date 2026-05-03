@@ -32,13 +32,14 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 public class MEStorageInfoProvider implements IProbeInfoProvider {
 
     @Override
     public String getID() {
-        return "random_additions:me_storage_info_provider";
+        return Tags.MOD_ID + ":me_storage_info_provider";
     }
 
     @Override
@@ -121,10 +122,8 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         IItemList<IAEItemStack> list = getItemStorageList(grid);
         if (list == null) return 0;
 
-        List<IAEItemStack> snapshot = new ArrayList<>();
-        for(IAEItemStack stack :list){
-            snapshot.add(stack);
-        }
+        List<IAEItemStack> snapshot = getItemStacks(list);
+        if (snapshot == null) return 0;
 
         long total = 0;
 
@@ -135,6 +134,18 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
             }
         }
         return total;
+    }
+
+    private static List<IAEItemStack> getItemStacks(IItemList<IAEItemStack> list) {
+        List<IAEItemStack> snapshot = new ArrayList<>();
+        try {
+            for (IAEItemStack stack : list) {
+                snapshot.add(stack);
+            }
+        } catch (ConcurrentModificationException e) {
+            return null;
+        }
+        return snapshot;
     }
 
     private static boolean isFluidBlock(IBlockState state) {
@@ -221,10 +232,9 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
             IItemList<IAEItemStack> list = MEStorageInfoProvider.getItemStorageList(grid);
             if (list == null) return 0;
 
-            List<IAEItemStack> snapshot = new ArrayList<>();
-            for (IAEItemStack stack : list) {
-                snapshot.add(stack);
-            }
+            List<IAEItemStack> snapshot = getItemStacks(list);
+            if (snapshot == null) return 0;
+
 
             long total = 0;
 
