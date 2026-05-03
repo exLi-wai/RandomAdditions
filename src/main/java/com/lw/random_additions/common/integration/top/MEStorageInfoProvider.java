@@ -108,12 +108,15 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
      */
     private static IItemList<IAEItemStack> getItemStorageList(IGrid grid) {
         if (grid == null) return null;
-        
+
         IStorageGrid storage = grid.getCache(IStorageGrid.class);
         IItemStorageChannel channel = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class);
         IMEMonitor<IAEItemStack> monitor = storage.getInventory(channel);
-        
-        return monitor != null ? monitor.getStorageList() : null;
+        if (monitor == null) return null;
+
+        IItemList<IAEItemStack> list = channel.createList();
+        monitor.getAvailableItems(list);
+        return list;
     }
 
     public static long getItemCountInGridByItemStack(IGrid grid, ItemStack targetStack) {

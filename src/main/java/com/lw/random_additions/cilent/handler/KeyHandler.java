@@ -9,6 +9,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
@@ -32,14 +33,16 @@ public class KeyHandler {
         );
         ClientRegistry.registerKeyBinding(WirelessInputKey);
 
-        OpenBaubleGUIKey = new KeyBinding(
-                "key.random_additions.open_bauble_gui",
-                KeyConflictContext.UNIVERSAL,
-                KeyModifier.NONE,
-                Keyboard.KEY_G,
-                "key.random_additions"
-        );
-        ClientRegistry.registerKeyBinding(OpenBaubleGUIKey);
+        if (Loader.isModLoaded("draconicevolution")) {
+            OpenBaubleGUIKey = new KeyBinding(
+                    "key.random_additions.open_bauble_gui",
+                    KeyConflictContext.UNIVERSAL,
+                    KeyModifier.NONE,
+                    Keyboard.KEY_G,
+                    "key.random_additions"
+            );
+            ClientRegistry.registerKeyBinding(OpenBaubleGUIKey);
+        }
     }
 
     @SubscribeEvent
@@ -47,15 +50,18 @@ public class KeyHandler {
         if (WirelessInputKey.isPressed()) {
             NetworkHandler.WirelessDeposit.sendToServer(new WirelessInput(0, 0));
         }
-        if (OpenBaubleGUIKey.isPressed()) {
-            EntityPlayer player = Minecraft.getMinecraft().player;
-            if (player == null || Minecraft.getMinecraft().currentScreen != null) return;
 
-            FMLNetworkHandler.openGui(player, DraconicEvolution.instance, 3,
-                    player.world,
-                    (int) player.posX,
-                    (int) player.posY,
-                    (int) player.posZ);
+        if (Loader.isModLoaded("draconicevolution")) {
+            if (OpenBaubleGUIKey.isPressed()) {
+                EntityPlayer player = Minecraft.getMinecraft().player;
+                if (player == null || Minecraft.getMinecraft().currentScreen != null) return;
+
+                FMLNetworkHandler.openGui(player, DraconicEvolution.instance, 3,
+                        player.world,
+                        (int) player.posX,
+                        (int) player.posY,
+                        (int) player.posZ);
+            }
         }
     }
 }
