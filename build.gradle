@@ -161,6 +161,7 @@ dependencies {
     compileOnly rfg.deobf ("curse.maven:ThaumicAdditions-232564:5394706")
     compileOnly rfg.deobf ("curse.maven:HammerLib-247401:6348753")
     compileOnly rfg.deobf ("curse.maven:TConstruct-74072:2902483")
+    compileOnly rfg.deobf ("curse.maven:DraconicEvolution-223565:3431261")
 
     if (propertyBool('use_asset_mover')) {
         implementation "com.cleanroommc:assetmover:${propertyString('asset_mover_version')}"

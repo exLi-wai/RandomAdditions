@@ -17,6 +17,7 @@ public class MixinConfig implements ILateMixinLoader {
         addModdedMixinCFG("mixins.random_additions.thaumcraft.json", "thaumcraft");
         addModdedMixinCFG("mixins.random_additions.thaumicadditions.json", "thaumadditions");
         addModdedMixinCFG("mixins.random_additions.jei.json", "jei");
+        addModdedMixinCFG("mixins.random_additions.dra.json", "draconicevolution");
     }
 
     @Override

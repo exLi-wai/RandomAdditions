@@ -1,0 +1,16 @@
+{
+  "package": "com.lw.random_additions.common.mixins.dra",
+  "required": true,
+  "refmap": "${mixin_refmap}",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8.5",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinPacketDislocatorHandler"
+  ],
+  "server": [],
+  "client": [
+    "MixinDislocatorAdvanced",
+    "MixinGuiDislocator"
+  ]
+}
