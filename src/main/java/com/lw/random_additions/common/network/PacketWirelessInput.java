@@ -7,7 +7,6 @@ import appeng.api.config.Actionable;
 import appeng.api.config.SecurityPermissions;
 import appeng.api.features.ILocatable;
 import appeng.api.features.IWirelessTermHandler;
-import appeng.api.features.IWirelessTermRegistry;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.storage.IStorageGrid;
 import appeng.api.storage.IMEInventory;
@@ -30,14 +29,14 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class WirelessInput implements IMessage {
+public class PacketWirelessInput implements IMessage {
 
     private int handSlot;
     private int amount;
 
-    public WirelessInput() {}
+    public PacketWirelessInput() {}
 
-    public WirelessInput(int handSlot, int amount) {
+    public PacketWirelessInput(int handSlot, int amount) {
         this.handSlot = handSlot;
         this.amount = amount;
     }
@@ -54,13 +53,13 @@ public class WirelessInput implements IMessage {
         buf.writeInt(this.amount);
     }
 
-    public static class Handler implements IMessageHandler<WirelessInput, IMessage> {
+    public static class Handler implements IMessageHandler<PacketWirelessInput, IMessage> {
 
         private static final Map<UUID, Long> cooldownMap = new ConcurrentHashMap<>();
         private static final long COOLDOWN_MS = 100;
 
         @Override
-        public IMessage onMessage(WirelessInput message, MessageContext ctx) {
+        public IMessage onMessage(PacketWirelessInput message, MessageContext ctx) {
             EntityPlayer player = ctx.getServerHandler().player;
             MinecraftServer server = player.getServer();
             UUID playerUUID = player.getUniqueID();

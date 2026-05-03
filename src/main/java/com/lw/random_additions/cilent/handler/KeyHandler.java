@@ -2,7 +2,7 @@ package com.lw.random_additions.cilent.handler;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.lw.random_additions.common.network.NetworkHandler;
-import com.lw.random_additions.common.network.WirelessInput;
+import com.lw.random_additions.common.network.PacketWirelessInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
@@ -48,7 +48,7 @@ public class KeyHandler {
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (WirelessInputKey.isPressed()) {
-            NetworkHandler.WirelessDeposit.sendToServer(new WirelessInput(0, 0));
+            NetworkHandler.WirelessDeposit.sendToServer(new PacketWirelessInput(0, 0));
         }
 
         if (Loader.isModLoaded("draconicevolution")) {

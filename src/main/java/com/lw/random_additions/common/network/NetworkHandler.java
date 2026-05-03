@@ -11,8 +11,8 @@ public class NetworkHandler {
 
     public static void registerPackets() {
         WirelessDeposit.registerMessage(
-                WirelessInput.Handler.class,
-                WirelessInput.class,
+                PacketWirelessInput.Handler.class,
+                PacketWirelessInput.class,
                 packetId++,
                 Side.SERVER
         );

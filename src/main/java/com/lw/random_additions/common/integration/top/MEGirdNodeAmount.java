@@ -30,62 +30,42 @@ public class MEGirdNodeAmount implements IProbeInfoProvider {
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, EntityPlayer entityPlayer, World world, IBlockState iBlockState, IProbeHitData iProbeHitData) {
         TileEntity tileEntity = world.getTileEntity(iProbeHitData.getPos());
         if (tileEntity == null) return;
-    
+
         IGrid grid = getGridFromTileEntity(tileEntity, iProbeHitData);
         if (grid == null) return;
-    
+
         int nodeCount = grid.getNodes().size();
         String nodeInfo = new TextComponentTranslation("random_additions.me_grid.node_count", nodeCount).getFormattedText();
         iProbeInfo.text(nodeInfo);
     }
-    
+
     private IGrid getGridFromTileEntity(TileEntity tileEntity, IProbeHitData hitData) {
-        if (tileEntity instanceof IPartHost) {
-            IGrid grid = getGridFromPartHost((IPartHost) tileEntity, hitData);
-            if (grid != null) return grid;
-        }
-
         if (tileEntity instanceof IGridHost) {
-            IGrid grid = getGridFromGridHost((IGridHost) tileEntity, hitData);
-            if (grid != null) return grid;
-        }
+            IGridHost host = (IGridHost) tileEntity;
+            AEPartLocation side = AEPartLocation.fromFacing(hitData.getSideHit());
 
+            IGridNode node = host.getGridNode(side);
+            if (node != null) return node.getGrid();
+
+            for (AEPartLocation loc : AEPartLocation.values()) {
+                node = host.getGridNode(loc);
+                if (node != null) return node.getGrid();
+            }
+
+            if (tileEntity instanceof IPartHost) {
+                IPartHost partHost = (IPartHost) tileEntity;
+                for (AEPartLocation loc : AEPartLocation.values()) {
+                    IPart part = partHost.getPart(loc);
+                    if (part != null) {
+                        node = part.getGridNode();
+                        if (node != null) return node.getGrid();
+                    }
+                }
+            }
+
+            return null;
+        }
         return getGridViaReflection(tileEntity);
-    }
-    
-    private IGrid getGridFromPartHost(IPartHost host, IProbeHitData hitData) {
-        IPart part = host.getPart(AEPartLocation.fromFacing(hitData.getSideHit()));
-
-        if (part == null) {
-            part = host.getPart(AEPartLocation.INTERNAL);
-        }
-            
-        if (part != null) {
-            IGridNode node = part.getGridNode();
-            return node != null ? node.getGrid() : null;
-        }
-
-        IGridNode hostNode = ((IGridHost) host).getGridNode(null);
-        return hostNode != null ? hostNode.getGrid() : null;
-    }
-
-    private IGrid getGridFromGridHost(IGridHost host, IProbeHitData hitData) {
-
-        AEPartLocation location = AEPartLocation.fromFacing(hitData.getSideHit());
-        IGridNode node = host.getGridNode(location);
-        if (node != null) {
-            node.getGrid();
-            return node.getGrid();
-        }
-
-        node = host.getGridNode(AEPartLocation.INTERNAL);
-        if (node != null) {
-            node.getGrid();
-            return node.getGrid();
-        }
-
-        node = host.getGridNode(null);
-        return node != null ? node.getGrid() : null;
     }
 
     /**

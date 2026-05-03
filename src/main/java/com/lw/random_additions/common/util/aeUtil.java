@@ -24,12 +24,12 @@ import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
 import com.google.common.collect.ImmutableCollection;
 
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.Packet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.Fluid;
+import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Loader;
 
 import javax.annotation.Nullable;
@@ -158,31 +158,18 @@ public class aeUtil {
     public static long getFluidCountInGrid(IGrid grid, Fluid targetFluid) {
         if (targetFluid == null) return 0;
 
-        try {
-            IStorageGrid storage = grid.getCache(IStorageGrid.class);
-            IFluidStorageChannel fluidChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
-            IMEMonitor<IAEFluidStack> monitor = storage.getInventory(fluidChannel);
+        IStorageGrid storage = grid.getCache(IStorageGrid.class);
+        IFluidStorageChannel fluidChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
+        IMEMonitor<IAEFluidStack> monitor = storage.getInventory(fluidChannel);
+        if (monitor == null) return 0;
 
-            if (monitor == null) return 0;
+        IItemList<IAEFluidStack> fluidList = monitor.getStorageList();
+        if (fluidList == null || fluidList.isEmpty()) return 0;
 
-            IItemList<IAEFluidStack> fluidList = monitor.getStorageList();
+        IAEFluidStack searchStack = fluidChannel.createStack(new FluidStack(targetFluid, 1));
+        if (searchStack == null) return 0;
 
-            List<IAEFluidStack> snapshot = new ArrayList<>();
-            for (IAEFluidStack stack : fluidList) {
-                snapshot.add(stack);
-            }
-
-            long total = 0;
-
-            for (IAEFluidStack aeFluidStack : snapshot) {
-                Fluid fluid = aeFluidStack.getFluid();
-                if (fluid == targetFluid) {
-                    total += aeFluidStack.getStackSize();
-                }
-            }
-            return total;
-        } catch (Exception e) {
-            return 0;
-        }
+        IAEFluidStack found = fluidList.findPrecise(searchStack);
+        return found != null ? found.getStackSize() : 0;
     }
 }
