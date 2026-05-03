@@ -11,6 +11,7 @@ import appeng.api.storage.channels.IItemStorageChannel;
 import appeng.api.storage.data.IAEItemStack;
 import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
+import appeng.client.gui.AEBaseGui;
 import com.lw.random_additions.Tags;
 import com.lw.random_additions.common.util.aeUtil;
 import mcjty.theoneprobe.api.*;
@@ -18,6 +19,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.I18n;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -31,9 +33,6 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
-import java.util.List;
 
 public class MEStorageInfoProvider implements IProbeInfoProvider {
 
@@ -44,6 +43,7 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
 
     @Override
     public void addProbeInfo(ProbeMode probeMode, IProbeInfo iProbeInfo, EntityPlayer player, World world, IBlockState blockState, IProbeHitData iProbeHitData) {
+        if (Minecraft.getMinecraft().currentScreen instanceof AEBaseGui) return;
         ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
         if (terminal.isEmpty()) return;
     
@@ -114,41 +114,20 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         IMEMonitor<IAEItemStack> monitor = storage.getInventory(channel);
         if (monitor == null) return null;
 
-        IItemList<IAEItemStack> list = channel.createList();
-        monitor.getAvailableItems(list);
-        return list;
+        return monitor.getStorageList();
     }
 
     public static long getItemCountInGridByItemStack(IGrid grid, ItemStack targetStack) {
         if (targetStack.isEmpty()) return 0;
 
         IItemList<IAEItemStack> list = getItemStorageList(grid);
-        if (list == null) return 0;
+        if (list == null || list.isEmpty()) return 0;
 
-        List<IAEItemStack> snapshot = getItemStacks(list);
-        if (snapshot == null) return 0;
+        IAEItemStack searchStack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(targetStack);
+        if (searchStack == null) return 0;
 
-        long total = 0;
-
-        for (IAEItemStack aeStack : snapshot) {
-            ItemStack stack = aeStack.createItemStack();
-            if (stack.getItem() == targetStack.getItem() && stack.getMetadata() == targetStack.getMetadata()) {
-                total += aeStack.getStackSize();
-            }
-        }
-        return total;
-    }
-
-    private static List<IAEItemStack> getItemStacks(IItemList<IAEItemStack> list) {
-        List<IAEItemStack> snapshot = new ArrayList<>();
-        try {
-            for (IAEItemStack stack : list) {
-                snapshot.add(stack);
-            }
-        } catch (ConcurrentModificationException e) {
-            return null;
-        }
-        return snapshot;
+        IAEItemStack found = list.findPrecise(searchStack);
+        return found != null ? found.getStackSize() : 0;
     }
 
     private static boolean isFluidBlock(IBlockState state) {
@@ -184,46 +163,71 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
     @Mod.EventBusSubscriber(modid = Tags.MOD_ID, value = Side.CLIENT)
     public static class EventMEStorageTooltip {
 
+        private static long lastQueryTime = 0;
+        private static long hoverStartTime = 0;
+        private static ItemStack lastQueriedItem = ItemStack.EMPTY;
+        private static long cachedCount = 0;
+        private static boolean cachedCraftable = false;
+
         @SubscribeEvent
         @SideOnly(Side.CLIENT)
         public static void onItemTooltip(ItemTooltipEvent event) {
             EntityPlayer player = event.getEntityPlayer();
             if (player == null) return;
 
-            ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
-            if (terminal == null || terminal.isEmpty()) return;
-
-            IGrid grid = aeUtil.getGridFromTerminal(terminal, player, player.getPosition());
-            if (grid == null) {
-                grid = aeUtil.getGridFromTerminalNBT(terminal, player);
-                if (grid == null) return;
-            }
-
             ItemStack itemStack = event.getItemStack();
             if (itemStack.isEmpty()) return;
 
+            if (Minecraft.getMinecraft().currentScreen instanceof AEBaseGui) return;
+
+            long now = Minecraft.getSystemTime();
+            boolean hitCache = now - lastQueryTime < 1000
+                    && !lastQueriedItem.isEmpty()
+                    && ItemStack.areItemStacksEqualUsingNBTShareTag(lastQueriedItem, itemStack);
+
             StringBuilder tooltipText = new StringBuilder();
 
-            long count;
-            if (itemStack.hasTagCompound()) {
-                count = getItemCountWithNBT(grid, itemStack);
+            if (hitCache) {
+                if (cachedCraftable) {
+                    tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
+                }
+                if (cachedCount > 0) {
+                    tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", cachedCount));
+                }
             } else {
-                count = MEStorageInfoProvider.getItemCountInGridByItemStack(grid, itemStack);
+                hoverStartTime = now;
+
+                ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
+                if (terminal == null || terminal.isEmpty()) return;
+
+                IGrid grid = aeUtil.getGridFromTerminal(terminal, player, player.getPosition());
+                if (grid == null) {
+                    grid = aeUtil.getGridFromTerminalNBT(terminal, player);
+                    if (grid == null) return;
+                }
+
+                long count;
+                if (itemStack.hasTagCompound()) {
+                    count = getItemCountWithNBT(grid, itemStack);
+                } else {
+                    count = MEStorageInfoProvider.getItemCountInGridByItemStack(grid, itemStack);
+                }
+                boolean craftable = aeUtil.isCraftable(grid, itemStack);
+
+                lastQueryTime = now;
+                lastQueriedItem = itemStack.copy();
+                cachedCount = count;
+                cachedCraftable = craftable;
+
+                if (craftable) {
+                    tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
+                }
+                if (count > 0) {
+                    tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", count));
+                }
             }
 
-            if (aeUtil.isCraftable(grid, itemStack)) {
-                String isCraftable = I18n.format("random_additions.me_storage.craftable");
-                tooltipText.append("§a").append(isCraftable).append(" ");
-            }
-                
-            if (count > 0) {
-                String countInfo = I18n.format("random_additions.me_storage.count", count);
-                tooltipText.append("§7").append(countInfo);
-            }
-            
-            if (tooltipText.length() > 0) {
-                event.getToolTip().add(tooltipText.toString());
-            }
+            event.getToolTip().add(tooltipText.toString());
         }
 
         /**
@@ -233,24 +237,13 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
             if (targetStack.isEmpty() || !targetStack.hasTagCompound()) return 0;
 
             IItemList<IAEItemStack> list = MEStorageInfoProvider.getItemStorageList(grid);
-            if (list == null) return 0;
+            if (list == null || list.isEmpty()) return 0;
 
-            List<IAEItemStack> snapshot = getItemStacks(list);
-            if (snapshot == null) return 0;
+            IAEItemStack searchStack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(targetStack);
+            if (searchStack == null) return 0;
 
-
-            long total = 0;
-
-            for (IAEItemStack aeStack : snapshot) {
-                ItemStack stack = aeStack.createItemStack();
-                if (targetStack.getTagCompound() != null && stack.getItem() == targetStack.getItem() &&
-                        stack.getMetadata() == targetStack.getMetadata() &&
-                        stack.hasTagCompound() &&
-                        stack.getTagCompound().equals(targetStack.getTagCompound())) {
-                    total += aeStack.getStackSize();
-                }
-            }
-            return total;
+            IAEItemStack found = list.findPrecise(searchStack);
+            return found != null ? found.getStackSize() : 0;
         }
 
     }

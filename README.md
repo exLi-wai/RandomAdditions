@@ -1,21 +1,36 @@
-## TemplateDevEnv
-_For Kotlin see [TemplateDevEnvKt](https://github.com/CleanroomMC/TemplateDevEnvKt)_
+# RandomAdditions
 
-Template workspace for modding Minecraft 1.12.2. Licensed under MIT, it is made for public use.
+[中文版](README_zh-CN.md)
 
-This template runs on **Java 25**, **Gradle 9.2.1** + **[RetroFuturaGradle](https://github.com/GTNewHorizons/RetroFuturaGradle) 2.0.2** + **Forge 14.23.5.2847**.
+Minecraft 1.12.2 Forge mod. Some useful small functions have been added, and some features that the author finds useful。
 
-With **coremod and mixin support** that is easy to configure.
+### AE2
+- **Wireless Terminal Shortcut** (ALT+V) — Directly store held items into ME network, automatically searches for wireless terminal from inventory or baubles slots
+- **TOP Storage Display** — When holding a wireless terminal, TOP shows total storage of target item in ME network (item count / fluid mB), craftable items marked with `[Craftable]`
+- **TOP Node Count Display** — Shows the number of AE2 grid nodes connected at current location
+- **Item Tooltip Enhancement** — When holding a wireless terminal, all item tooltips append ME network storage amount
+- **JEI Fluid Tooltip** — When holding a wireless terminal, JEI fluid tooltips display total amount of that fluid in ME network
 
-### Instructions:
+### Draconic Evolution + Baubles
+- **Teleport Charm** — Advanced teleport charm can be worn as Baubles accessory and opened via shortcut key to access GUI
 
-1. Click `use this template` at the top.
-2. Clone the repository that you have created with this template to your local machine.
-3. Make sure IDEA is using Java 25 for Gradle before you sync the project. Verify this by going to IDEA's `Settings > Build, Execution, Deployment > Build Tools > Gradle > Gradle JVM`.
-4. Open the project folder in IDEA. When prompted, click "Load Gradle Project" as it detects the `build.gradle`, if you weren't prompted, right-click the project's `build.gradle` in IDEA, select `Link Gradle Project`, after completion, hit `Refresh All` in the gradle tab on the right.
-5. Run gradle tasks such as `runClient` and `runServer` in the IDEA gradle tab, or use the auto-imported run configurations like `1. Run Client`.
 
-### Notes:
-- Dependencies script in [gradle/scripts/dependencies.gradle](gradle/scripts/dependencies.gradle), explanations are commented in the file.
-- Publishing script in [gradle/scripts/publishing.gradle](gradle/scripts/publishing.gradle).
-- When writing Mixins on IntelliJ, it is advisable to use latest [MinecraftDev Fork for RetroFuturaGradle](https://github.com/eigenraven/MinecraftDev/releases).
+### Thaumcraft
+- **Cauldron Blacklist** — Prevent specified items from dissolving in cauldrons (configurable)
+- **Smeltery Blacklist** — Prevent specified items from smelting in smelteries
+
+### Thaumic Additions
+- **Advanced Distillation Tower Blacklist** — Same as above, for TA's advanced distillation tower
+
+### Tinkers' Construct
+- **Thaumonomicon Tool Placeholder Fix** — Prevent TiC tools from being recognized by Thaumonomicon as "enchanted items" placeholders
+
+You can freely add it to your modpack，as long as you indicate the source
+
+## Building
+
+```bash
+./gradlew build
+```
+
+Java 25 + RetroFuturaGradle.
