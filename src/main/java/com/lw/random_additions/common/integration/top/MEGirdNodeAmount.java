@@ -3,8 +3,7 @@ package com.lw.random_additions.common.integration.top;
 import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
-import appeng.api.parts.IPart;
-import appeng.api.parts.IPartHost;
+import appeng.api.networking.security.IActionHost;
 import appeng.api.util.AEPartLocation;
 import com.lw.random_additions.Tags;
 import mcjty.theoneprobe.api.IProbeHitData;
@@ -19,8 +18,13 @@ import net.minecraft.world.World;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MEGirdNodeAmount implements IProbeInfoProvider {
+
+    private static final Set<Class<?>> REFLECTION_FAILED_CACHE = new HashSet<>();
+
     @Override
     public String getID() {
         return Tags.MOD_ID + ":me_gird_node_amount";
@@ -40,76 +44,72 @@ public class MEGirdNodeAmount implements IProbeInfoProvider {
     }
 
     private IGrid getGridFromTileEntity(TileEntity tileEntity, IProbeHitData hitData) {
+        IGrid grid = null;
+
+        if (tileEntity instanceof IActionHost) {
+            IGridNode node = ((IActionHost) tileEntity).getActionableNode();
+            grid = node.getGrid();
+            return grid;
+        }
+
         if (tileEntity instanceof IGridHost) {
             IGridHost host = (IGridHost) tileEntity;
-            AEPartLocation side = AEPartLocation.fromFacing(hitData.getSideHit());
-
-            IGridNode node = host.getGridNode(side);
-            if (node != null) return node.getGrid();
+            IGridNode node = host.getGridNode(AEPartLocation.INTERNAL);
+            if (node != null) {
+                grid = node.getGrid();
+                return grid;
+            }
 
             for (AEPartLocation loc : AEPartLocation.values()) {
                 node = host.getGridNode(loc);
-                if (node != null) return node.getGrid();
-            }
-
-            if (tileEntity instanceof IPartHost) {
-                IPartHost partHost = (IPartHost) tileEntity;
-                for (AEPartLocation loc : AEPartLocation.values()) {
-                    IPart part = partHost.getPart(loc);
-                    if (part != null) {
-                        node = part.getGridNode();
-                        if (node != null) return node.getGrid();
-                    }
+                if (node != null) {
+                    grid = node.getGrid();
+                    return grid;
                 }
             }
-
-            return null;
         }
-        return getGridViaReflection(tileEntity);
+
+        grid = getGridViaReflection(tileEntity);
+        return grid;
     }
 
     /**
      * 反射从 TileEntity 中获取 IGrid 实例
-     * @param tileEntity 要检查的 TileEntity 实例
-     * @return 找到的 IGrid 实例，如果未找到或发生异常则返回 null
      */
     private IGrid getGridViaReflection(TileEntity tileEntity) {
         if (tileEntity == null) return null;
-        
+
+        Class<?> clazz = tileEntity.getClass();
+
+        if (REFLECTION_FAILED_CACHE.contains(clazz)) return null;
+        REFLECTION_FAILED_CACHE.add(clazz);
+
         try {
-            Method getGridMethod = null;
-
-            for (Method method : tileEntity.getClass().getMethods()) {
+            for (Method method : clazz.getMethods()) {
                 String methodName = method.getName();
-                if ((methodName.contains("Grid") || methodName.contains("grid")) && 
-                    method.getParameterCount() == 0) {
-                    
-                    Class<?> returnType = method.getReturnType();
+                if ((methodName.contains("Grid") || methodName.contains("grid")) &&
+                        method.getParameterCount() == 0) {
 
+                    Class<?> returnType = method.getReturnType();
                     if (returnType.getName().equals("appeng.api.networking.IGrid")) {
-                        getGridMethod = method;
-                        break;
+                        return (IGrid) method.invoke(tileEntity);
                     }
                     else if (returnType.getName().equals("appeng.api.networking.IGridNode")) {
                         Object node = method.invoke(tileEntity);
                         if (node != null) {
-                            java.lang.reflect.Method getGrid = node.getClass().getMethod("getGrid");
+                            Method getGrid = node.getClass().getMethod("getGrid");
                             return (IGrid) getGrid.invoke(node);
                         }
-
                     }
                 }
             }
-            if (getGridMethod != null) {
-                return (IGrid) getGridMethod.invoke(tileEntity);
-            }
 
-            for (Field field : tileEntity.getClass().getDeclaredFields()) {
+            for (Field field : clazz.getDeclaredFields()) {
                 String fieldName = field.getName();
                 if (fieldName.contains("grid") || fieldName.contains("Grid")) {
                     field.setAccessible(true);
                     Object fieldValue = field.get(tileEntity);
-                    
+
                     if (fieldValue != null) {
                         if (fieldValue instanceof IGrid) {
                             return (IGrid) fieldValue;
@@ -121,10 +121,10 @@ public class MEGirdNodeAmount implements IProbeInfoProvider {
                     }
                 }
             }
-            
-        } catch (Exception ignored) {
 
+        } catch (Throwable e) {
         }
+
         return null;
     }
 }
