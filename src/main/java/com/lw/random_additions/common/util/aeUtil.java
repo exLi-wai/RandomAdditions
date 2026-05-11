@@ -22,15 +22,16 @@ import appeng.items.tools.powered.ToolWirelessTerminal;
 import appeng.tile.misc.TileSecurityStation;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
+import com.glodblock.github.common.item.fake.FakeFluids;
 import com.google.common.collect.ImmutableCollection;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.Packet;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nullable;
 
@@ -121,6 +122,32 @@ public class aeUtil {
 
             ImmutableCollection<ICraftingPatternDetails> patterns = craftingGrid.getCraftingFor(aeStack, null, 1, null);
 
+            return patterns != null && !patterns.isEmpty();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Optional.Method(modid = "ae2fc")
+    public static boolean isFluidCraftable(IGrid grid, Fluid fluid) {
+        if (fluid == null) return false;
+        if (!Loader.isModLoaded("ae2fc")) return false;
+        return isCraftable(grid, fluid);
+    }
+
+    @Optional.Method(modid = "ae2fc")
+    public static boolean isCraftable(IGrid grid, Fluid fluid) {
+        try {
+            ICraftingGrid craftingGrid = grid.getCache(ICraftingGrid.class);
+
+            IFluidStorageChannel fluidChannel = AEApi.instance().storage().getStorageChannel(IFluidStorageChannel.class);
+            IAEFluidStack aeFluidStack = fluidChannel.createStack(new FluidStack(fluid, 1));
+            if (aeFluidStack == null) return false;
+
+            IAEItemStack fakeStack = FakeFluids.packFluid2AEDrops(aeFluidStack);
+            if (fakeStack == null) return false;
+
+            ImmutableCollection<ICraftingPatternDetails> patterns = craftingGrid.getCraftingFor(fakeStack, null, 1, null);
             return patterns != null && !patterns.isEmpty();
         } catch (Exception e) {
             return false;
