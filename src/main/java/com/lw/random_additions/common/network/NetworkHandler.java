@@ -1,8 +1,11 @@
 package com.lw.random_additions.common.network;
 
+import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
 import net.minecraftforge.fml.common.network.simpleimpl.SimpleNetworkWrapper;
 import net.minecraftforge.fml.relauncher.Side;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 public class NetworkHandler {
 
@@ -16,6 +19,16 @@ public class NetworkHandler {
                 packetId++,
                 Side.SERVER
         );
+
+        if(Loader.isModLoaded("randomthings")){
+            WirelessDeposit.registerMessage(
+                    PacketTimeBottle.Handler.class,
+                    PacketTimeBottle.class,
+                    packetId++,
+                    Side.SERVER
+            );
+        }
+
     }
 }
 

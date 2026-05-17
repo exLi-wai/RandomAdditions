@@ -2,10 +2,14 @@ package com.lw.random_additions.cilent.handler;
 
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.lw.random_additions.common.network.NetworkHandler;
+import com.lw.random_additions.common.network.PacketTimeBottle;
 import com.lw.random_additions.common.network.PacketWirelessInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -22,6 +26,7 @@ public class KeyHandler {
 
     public static KeyBinding WirelessInputKey;
     public static KeyBinding OpenBaubleGUIKey;
+    public static KeyBinding TimeBottleKey;
 
     public static void init() {
         WirelessInputKey = new KeyBinding(
@@ -43,6 +48,18 @@ public class KeyHandler {
             );
             ClientRegistry.registerKeyBinding(OpenBaubleGUIKey);
         }
+
+        if(Loader.isModLoaded("randomthings")){
+            TimeBottleKey = new KeyBinding(
+                    "key.random_additions.time_bottle",
+                    KeyConflictContext.UNIVERSAL,
+                    KeyModifier.NONE,
+                    Keyboard.KEY_C,
+                    "key.random_additions"
+            );
+            ClientRegistry.registerKeyBinding(TimeBottleKey);
+        }
+
     }
 
     @SubscribeEvent
@@ -63,6 +80,24 @@ public class KeyHandler {
                         (int) player.posZ);
             }
         }
+
+        if(Loader.isModLoaded("randomthings")){
+            if (TimeBottleKey.isPressed()) {
+                EntityPlayer player = Minecraft.getMinecraft().player;
+                if (player == null) return;
+
+                RayTraceResult ray = player.rayTrace(4.5D, 1.0F);
+                if (ray != null && ray.typeOfHit == RayTraceResult.Type.BLOCK) {
+                    BlockPos pos = ray.getBlockPos();
+                    EnumFacing side = ray.sideHit;
+                    float hitX = (float) (ray.hitVec.x - pos.getX());
+                    float hitY = (float) (ray.hitVec.y - pos.getY());
+                    float hitZ = (float) (ray.hitVec.z - pos.getZ());
+                    NetworkHandler.WirelessDeposit.sendToServer(new PacketTimeBottle(pos, side, hitX, hitY, hitZ));
+                }
+            }
+        }
+
     }
 }
 

@@ -12,7 +12,7 @@ import thaumcraft.common.tiles.crafting.TileCrucible;
 public class MixinTileCrucible {
 
     @ModifyVariable(
-            method = "attemptSmelt",
+            method = "attemptSmelt*",
             at = @At(
                     value = "INVOKE",
                     target = "Lthaumcraft/common/lib/crafting/ThaumcraftCraftingManager;getObjectTags(Lnet/minecraft/item/ItemStack;)Lthaumcraft/api/aspects/AspectList;",
