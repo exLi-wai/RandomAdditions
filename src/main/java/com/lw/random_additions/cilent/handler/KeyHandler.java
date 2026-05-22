@@ -1,5 +1,7 @@
 package com.lw.random_additions.cilent.handler;
 
+import baubles.api.BaublesApi;
+import baubles.api.cap.IBaublesItemHandler;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.lw.random_additions.common.network.NetworkHandler;
 import com.lw.random_additions.common.network.PacketTimeBottle;
@@ -7,9 +9,11 @@ import com.lw.random_additions.common.network.PacketWirelessInput;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.settings.KeyBinding;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
@@ -73,6 +77,18 @@ public class KeyHandler {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (player == null || Minecraft.getMinecraft().currentScreen != null) return;
 
+                if (!Loader.isModLoaded("baubles")) return;
+                IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+                boolean found = false;
+                for (int i = 0; i < baubles.getSlots(); i++) {
+                    ItemStack s = baubles.getStackInSlot(i);
+                    if (!s.isEmpty() && s.getItem() == com.brandon3055.draconicevolution.DEFeatures.dislocatorAdvanced) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found) return;
+
                 FMLNetworkHandler.openGui(player, DraconicEvolution.instance, 3,
                         player.world,
                         (int) player.posX,
@@ -86,7 +102,10 @@ public class KeyHandler {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (player == null) return;
 
-                RayTraceResult ray = player.rayTrace(4.5D, 1.0F);
+                Vec3d eyePos = player.getPositionEyes(1.0F);
+                Vec3d lookVec = player.getLook(1.0F);
+                Vec3d end = eyePos.add(lookVec.x * 4.5D, lookVec.y * 4.5D, lookVec.z * 4.5D);
+                RayTraceResult ray = player.world.rayTraceBlocks(eyePos, end);
                 if (ray != null && ray.typeOfHit == RayTraceResult.Type.BLOCK) {
                     BlockPos pos = ray.getBlockPos();
                     EnumFacing side = ray.sideHit;

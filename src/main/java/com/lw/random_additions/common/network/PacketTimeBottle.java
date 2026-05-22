@@ -8,7 +8,6 @@ import lumien.randomthings.item.ItemTimeInABottle;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.SoundCategory;
@@ -76,9 +75,7 @@ public class PacketTimeBottle implements IMessage {
             ItemStack bottle = findTimeBottle(player);
             if (bottle.isEmpty()) return;
 
-            NBTTagCompound timeData = bottle.getSubCompound("timeData");
-            if (timeData == null) return;
-            int storedTime = timeData.getInteger("storedTime");
+            long storedTime = ItemTimeInABottle.getStoredTime(bottle, player);
 
             Optional<EntityTimeAccelerator> o = world.getEntitiesWithinAABB(
                     EntityTimeAccelerator.class,
@@ -91,14 +88,14 @@ public class PacketTimeBottle implements IMessage {
                 if (currentRate >= 32) return;
 
                 int nextRate = currentRate * 2;
-                int timeRequired = nextRate / 2 * 20 * 30;
+                long timeRequired = nextRate / 2 * 20 * 30;
 
                 if (storedTime >= timeRequired || player.capabilities.isCreativeMode) {
                     int usedUpTime = 600 - eta.getRemainingTime();
                     int timeAdded = (nextRate * usedUpTime - currentRate * usedUpTime) / nextRate;
 
                     if (!player.capabilities.isCreativeMode) {
-                        timeData.setInteger("storedTime", storedTime - timeRequired);
+                        ItemTimeInABottle.setStoredTime(bottle, player, storedTime - timeRequired);
                     }
 
                     eta.setTimeRate(nextRate);
@@ -118,7 +115,7 @@ public class PacketTimeBottle implements IMessage {
             } else {
                 if (storedTime >= 600 || player.capabilities.isCreativeMode) {
                     if (!player.capabilities.isCreativeMode) {
-                        timeData.setInteger("storedTime", storedTime - 600);
+                        ItemTimeInABottle.setStoredTime(bottle, player, storedTime - 600);
                     }
 
                     EntityTimeAccelerator n = new EntityTimeAccelerator(
