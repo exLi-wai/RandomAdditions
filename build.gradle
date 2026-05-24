@@ -111,6 +111,10 @@ repositories {
         name = "jared's maven"
         url = uri("https://maven.blamejared.com/")
     }
+    maven {
+        name 'SlimeKnights Maven'
+        url 'https://dvs1.progwml6.com/files/maven/'
+    }
 }
 
 dependencies {
@@ -161,6 +165,7 @@ dependencies {
     compileOnly rfg.deobf ("curse.maven:ThaumicAdditions-232564:5394706")
     compileOnly rfg.deobf ("curse.maven:HammerLib-247401:6348753")
     compileOnly rfg.deobf ("curse.maven:TConstruct-74072:2902483")
+    compileOnly rfg.deobf ("curse.maven:Mantle-74924:2713386")
     compileOnly rfg.deobf ("curse.maven:DraconicEvolution-223565:3431261")
     compileOnly rfg.deobf ("curse.maven:brandons-core-231382:3408276")
     compileOnly rfg.deobf ("curse.maven:QuantumThings-1387363:7931375")

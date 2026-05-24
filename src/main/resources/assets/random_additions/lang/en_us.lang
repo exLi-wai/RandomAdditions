@@ -7,3 +7,9 @@ random_additions.me_storage.count=ME network storage: %s
 random_additions.fluid_storage.count=ME network storage: %s %s
 random_additions.me_storage.craftable=[Craftable]
 random_additions.me_grid.node_count=ME network nodes: %s
+
+modifier.remove_inscription.name=Forget
+modifier.remove_inscription.desc=§oClean slate!§r\nRemoves all inscriptions from the tool.
+modifier.remove_inscription.book.text=A clean slate! Removes all inscriptions (embossments) from your tool, freeing it from extra traits.
+modifier.remove_inscription.book.effect1=Removes all inscriptions from the tool
+modifier.remove_inscription.book.effect2=Can be applied again after adding new inscriptions
