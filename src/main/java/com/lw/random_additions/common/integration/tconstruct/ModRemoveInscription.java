@@ -219,54 +219,51 @@ public class ModRemoveInscription implements IModifier, IModifierDisplay {
 
     @SideOnly(Side.CLIENT)
     public static void addTConstructBookEntry() {
-        if (Loader.isModLoaded("tconstruct")) {
+        TinkerBook.INSTANCE.addTransformer(new BookTransformer() {
+            @Override
+            public void transform(BookData book) {
+                for (SectionData section : book.sections) {
+                    if (!"modifiers".equals(section.name)) continue;
 
-            TinkerBook.INSTANCE.addTransformer(new BookTransformer() {
-                @Override
-                public void transform(BookData book) {
-                    for (SectionData section : book.sections) {
-                        if (!"modifiers".equals(section.name)) continue;
-
-                        for (PageData existing : section.pages) {
-                            if (existing.content instanceof ContentModifier) {
-                                if (ModRemoveInscription.IDENTIFIER.equals(
-                                        ((ContentModifier) existing.content).modifierName)) {
-                                    return;
-                                }
+                    for (PageData existing : section.pages) {
+                        if (existing.content instanceof ContentModifier) {
+                            if (ModRemoveInscription.IDENTIFIER.equals(
+                                    ((ContentModifier) existing.content).modifierName)) {
+                                return;
                             }
                         }
-
-                        ContentModifier content = new ContentModifier();
-                        content.modifierName = ModRemoveInscription.IDENTIFIER;
-                        content.text = new TextData[]{
-                                new TextData(I18n.format("modifier.remove_inscription.book.text"))
-                        };
-                        content.effects = new String[]{
-                                I18n.format("modifier.remove_inscription.book.effect1"),
-                                I18n.format("modifier.remove_inscription.book.effect2"),
-                        };
-
-                        PageData page = new PageData(true);
-                        page.name = ModRemoveInscription.IDENTIFIER;
-                        page.source = section.source;
-                        page.parent = section;
-                        page.content = content;
-                        page.load();
-
-                        section.pages.add(page);
-
-                        if (!section.pages.isEmpty() && section.pages.get(0).content instanceof ContentListing) {
-                            IModifier modifier = TinkerRegistry.getModifier(ModRemoveInscription.IDENTIFIER);
-                            if (modifier != null) {
-                                ((ContentListing) section.pages.get(0).content)
-                                        .addEntry(modifier.getLocalizedName(), page);
-                            }
-                        }
-                        break;
                     }
-                }
-            });
 
-        }
+                    ContentModifier content = new ContentModifier();
+                    content.modifierName = ModRemoveInscription.IDENTIFIER;
+                    content.text = new TextData[]{
+                            new TextData(I18n.format("modifier.remove_inscription.book.text"))
+                    };
+                    content.effects = new String[]{
+                            I18n.format("modifier.remove_inscription.book.effect1"),
+                            I18n.format("modifier.remove_inscription.book.effect2"),
+                    };
+
+                    PageData page = new PageData(true);
+                    page.name = ModRemoveInscription.IDENTIFIER;
+                    page.source = section.source;
+                    page.parent = section;
+                    page.content = content;
+                    page.load();
+
+                    section.pages.add(page);
+
+                    if (!section.pages.isEmpty() && section.pages.get(0).content instanceof ContentListing) {
+                        IModifier modifier = TinkerRegistry.getModifier(ModRemoveInscription.IDENTIFIER);
+                        if (modifier != null) {
+                            ((ContentListing) section.pages.get(0).content)
+                                    .addEntry(modifier.getLocalizedName(), page);
+                        }
+                    }
+                    break;
+                }
+            }
+        });
+
     }
 }
