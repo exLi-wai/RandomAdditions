@@ -191,9 +191,7 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
                 if (cachedCraftable) {
                     tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
                 }
-                if (cachedCount > 0) {
-                    tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", cachedCount));
-                }
+                tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", cachedCount));
             } else {
                 hoverStartTime = now;
 
@@ -222,12 +220,12 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
                 if (craftable) {
                     tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
                 }
-                if (count > 0) {
-                    tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", count));
-                }
+                tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", count));
             }
 
-            event.getToolTip().add(tooltipText.toString());
+            if (tooltipText.length() > 0) {
+                event.getToolTip().add(tooltipText.toString());
+            }
         }
 
         /**
