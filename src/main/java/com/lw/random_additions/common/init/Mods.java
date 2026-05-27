@@ -6,7 +6,8 @@ public enum Mods {
     DRA("draconicevolution"),
     BAUBLES("baubles"),
     RD("randomthings"),
-    AE2FC("ae2fc");
+    AE2FC("ae2fc"),
+    TC("tconstruct");
 
     public final String modid;
 

@@ -1,6 +1,7 @@
 package com.lw.random_additions.proxy;
 
 import com.lw.random_additions.cilent.handler.KeyHandler;
+import com.lw.random_additions.common.init.Mods;
 import com.lw.random_additions.common.integration.tconstruct.ModRemoveInscription;
 import com.lw.random_additions.common.integration.top.MEGirdNodeAmount;
 import com.lw.random_additions.common.integration.top.MEStorageInfoProvider;
@@ -31,7 +32,7 @@ public class ClientProxy extends CommonProxy {
     @Override
     public void init(FMLInitializationEvent event) {
         super.init(event);
-        if(Loader.isModLoaded("tconstruct")){
+        if(Mods.TC.isLoaded()){
             ModRemoveInscription.addTConstructBookEntry();
         }
     }
