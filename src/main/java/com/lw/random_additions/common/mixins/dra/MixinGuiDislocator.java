@@ -43,6 +43,10 @@ public class MixinGuiDislocator {
 
     @Unique
     private ItemStack randomAdditions$findItem(EntityPlayer player, Item item) {
+        ItemStack main = player.getHeldItemMainhand();
+        if (!main.isEmpty() && main.getItem() == item) return main;
+        ItemStack off = player.getHeldItemOffhand();
+        if (!off.isEmpty() && off.getItem() == item) return off;
         if (Loader.isModLoaded("baubles")) {
             IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
             for (int i = 0; i < baubles.getSlots(); i++) {
@@ -50,6 +54,6 @@ public class MixinGuiDislocator {
                 if (!s.isEmpty() && s.getItem() == item) return s;
             }
         }
-        return ItemStack.EMPTY;
+        return null;
     }
 }

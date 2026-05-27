@@ -1,5 +1,6 @@
 package com.lw.random_additions.common.network;
 
+import com.lw.random_additions.common.init.Mods;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 import net.minecraftforge.fml.common.network.NetworkRegistry;
@@ -20,7 +21,7 @@ public class NetworkHandler {
                 Side.SERVER
         );
 
-        if(Loader.isModLoaded("randomthings")){
+        if(Mods.RD.isLoaded()){
             WirelessDeposit.registerMessage(
                     PacketTimeBottle.Handler.class,
                     PacketTimeBottle.class,

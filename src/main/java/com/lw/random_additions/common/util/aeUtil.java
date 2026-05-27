@@ -25,6 +25,7 @@ import baubles.api.cap.IBaublesItemHandler;
 import com.glodblock.github.common.item.fake.FakeFluids;
 import com.google.common.collect.ImmutableCollection;
 
+import com.lw.random_additions.common.init.Mods;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
@@ -48,7 +49,7 @@ public class aeUtil {
             }
         }
 
-        if (Loader.isModLoaded("baubles")) {
+        if (Mods.BAUBLES.isLoaded()) {
             IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
             if (baubles != null) {
                 for (int i = 0; i < baubles.getSlots(); i++) {
@@ -131,7 +132,7 @@ public class aeUtil {
     @Optional.Method(modid = "ae2fc")
     public static boolean isFluidCraftable(IGrid grid, Fluid fluid) {
         if (fluid == null) return false;
-        if (!Loader.isModLoaded("ae2fc")) return false;
+        if (!Mods.AE2FC.isLoaded()) return false;
         return isCraftable(grid, fluid);
     }
 

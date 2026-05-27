@@ -3,6 +3,7 @@ package com.lw.random_additions.cilent.handler;
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
 import com.brandon3055.draconicevolution.DraconicEvolution;
+import com.lw.random_additions.common.init.Mods;
 import com.lw.random_additions.common.network.NetworkHandler;
 import com.lw.random_additions.common.network.PacketTimeBottle;
 import com.lw.random_additions.common.network.PacketWirelessInput;
@@ -42,7 +43,7 @@ public class KeyHandler {
         );
         ClientRegistry.registerKeyBinding(WirelessInputKey);
 
-        if (Loader.isModLoaded("draconicevolution")) {
+        if (Mods.DRA.isLoaded()) {
             OpenBaubleGUIKey = new KeyBinding(
                     "key.random_additions.open_bauble_gui",
                     KeyConflictContext.UNIVERSAL,
@@ -53,7 +54,7 @@ public class KeyHandler {
             ClientRegistry.registerKeyBinding(OpenBaubleGUIKey);
         }
 
-        if(Loader.isModLoaded("randomthings")){
+        if(Mods.RD.isLoaded()){
             TimeBottleKey = new KeyBinding(
                     "key.random_additions.time_bottle",
                     KeyConflictContext.UNIVERSAL,
@@ -72,7 +73,7 @@ public class KeyHandler {
             NetworkHandler.WirelessDeposit.sendToServer(new PacketWirelessInput(0, 0));
         }
 
-        if (Loader.isModLoaded("draconicevolution")) {
+        if (Mods.DRA.isLoaded()) {
             if (OpenBaubleGUIKey.isPressed()) {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (player == null || Minecraft.getMinecraft().currentScreen != null) return;
@@ -97,7 +98,7 @@ public class KeyHandler {
             }
         }
 
-        if(Loader.isModLoaded("randomthings")){
+        if(Mods.RD.isLoaded()){
             if (TimeBottleKey.isPressed()) {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (player == null) return;
