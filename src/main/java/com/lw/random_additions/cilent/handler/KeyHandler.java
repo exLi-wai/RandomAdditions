@@ -70,7 +70,7 @@ public class KeyHandler {
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event) {
         if (WirelessInputKey.isPressed()) {
-            NetworkHandler.WirelessDeposit.sendToServer(new PacketWirelessInput(0, 0));
+            NetworkHandler.CHANNEL.sendToServer(new PacketWirelessInput(0, 0));
         }
 
         if (Mods.DRA.isLoaded()) {
@@ -113,7 +113,7 @@ public class KeyHandler {
                     float hitX = (float) (ray.hitVec.x - pos.getX());
                     float hitY = (float) (ray.hitVec.y - pos.getY());
                     float hitZ = (float) (ray.hitVec.z - pos.getZ());
-                    NetworkHandler.WirelessDeposit.sendToServer(new PacketTimeBottle(pos, side, hitX, hitY, hitZ));
+                    NetworkHandler.CHANNEL.sendToServer(new PacketTimeBottle(pos, side, hitX, hitY, hitZ));
                 }
             }
         }

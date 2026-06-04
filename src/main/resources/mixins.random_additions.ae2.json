@@ -1,0 +1,11 @@
+{
+  "package": "com.lw.random_additions.common.mixins.ae2",
+  "required": true,
+  "refmap": "${mixin_refmap}",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8.5",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [],
+  "server": [],
+  "client": []
+}

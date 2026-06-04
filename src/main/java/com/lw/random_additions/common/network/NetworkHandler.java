@@ -11,23 +11,12 @@ import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 public class NetworkHandler {
 
     private static int packetId = 0;
-    public static final SimpleNetworkWrapper WirelessDeposit = NetworkRegistry.INSTANCE.newSimpleChannel("random_additions:wireless_input");
+    public static final SimpleNetworkWrapper CHANNEL = NetworkRegistry.INSTANCE.newSimpleChannel("ra");
 
     public static void registerPackets() {
-        WirelessDeposit.registerMessage(
-                PacketWirelessInput.Handler.class,
-                PacketWirelessInput.class,
-                packetId++,
-                Side.SERVER
-        );
-
+        CHANNEL.registerMessage(PacketWirelessInput.Handler.class, PacketWirelessInput.class, packetId++, Side.SERVER);
         if(Mods.RD.isLoaded()){
-            WirelessDeposit.registerMessage(
-                    PacketTimeBottle.Handler.class,
-                    PacketTimeBottle.class,
-                    packetId++,
-                    Side.SERVER
-            );
+            CHANNEL.registerMessage(PacketTimeBottle.Handler.class, PacketTimeBottle.class, packetId++, Side.SERVER);
         }
 
     }
