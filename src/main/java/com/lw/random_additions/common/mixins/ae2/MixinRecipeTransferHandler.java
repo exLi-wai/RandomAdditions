@@ -1,5 +1,6 @@
 package com.lw.random_additions.common.mixins.ae2;
 
+import appeng.helpers.ItemStackHelper;
 import com.lw.random_additions.common.utils.PatternMachineTypeUtil;
 import com.lw.random_additions.common.integration.jei.JeiPlugin;
 import mezz.jei.api.IJeiRuntime;
@@ -11,11 +12,13 @@ import mezz.jei.api.recipe.transfer.IRecipeTransferError;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.List;
@@ -27,7 +30,8 @@ public abstract class MixinRecipeTransferHandler {
             method = "transferRecipe",
             at = @At(
                     value = "INVOKE",
-                    target = "Lappeng/core/sync/packets/PacketJEIRecipe;<init>(Lnet/minecraft/nbt/NBTTagCompound;)V",
+                    target = "Lappeng/helpers/ItemStackHelper;stackToNBT(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/nbt/NBTTagCompound;",
+                    ordinal = 0,
                     shift = At.Shift.BEFORE
             )
     )
@@ -36,6 +40,25 @@ public abstract class MixinRecipeTransferHandler {
             final String machineType = RandomAdditions$getCatalystMachineName(recipeLayout.getRecipeCategory());
             PatternMachineTypeUtil.setCurrentJeiMachineType(machineType);
         }
+    }
+
+    @Redirect(
+            method = "transferRecipe",
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lappeng/helpers/ItemStackHelper;stackToNBT(Lnet/minecraft/item/ItemStack;)Lnet/minecraft/nbt/NBTTagCompound;",
+                    ordinal = 0
+            )
+    )
+    private NBTTagCompound RandomAdditions$writeMachineTypeToOutput(final ItemStack output) {
+        final NBTTagCompound tag = ItemStackHelper.stackToNBT(output);
+        PatternMachineTypeUtil.writeToItemStackTag(tag, PatternMachineTypeUtil.getCurrentJeiMachineType());
+        return tag;
+    }
+
+    @Inject(method = "transferRecipe", at = @At("RETURN"))
+    private void RandomAdditions$clearCapturedMachineType(final Container container, final IRecipeLayout recipeLayout, final EntityPlayer player, final boolean maxTransfer, final boolean doTransfer, final CallbackInfoReturnable<IRecipeTransferError> cir) {
+        PatternMachineTypeUtil.clearCurrentJeiMachineType();
     }
 
     @Unique

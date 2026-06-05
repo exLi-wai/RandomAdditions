@@ -69,7 +69,13 @@ public abstract class MixinContainerPatternTerm implements PatternMachineType {
     private NBTTagCompound RandomAdditions$writeMachineTypeToPattern(final NBTTagCompound encodedValue) {
         if (!this.isCraftingMode() && this.RandomAdditions$hasFreshJeiMachineType()) {
             PatternMachineTypeUtil.write(encodedValue, this.RandomAdditions$jeiMachineType);
+        } else if (!this.isCraftingMode()) {
+            final String outputMachineType = this.RandomAdditions$getMachineTypeFromOutputs();
+            if (!outputMachineType.isEmpty()) {
+                PatternMachineTypeUtil.write(encodedValue, outputMachineType);
+            }
         }
+        PatternMachineTypeUtil.stripFromEncodedPattern(encodedValue);
         return encodedValue;
     }
 
@@ -117,5 +123,22 @@ public abstract class MixinContainerPatternTerm implements PatternMachineType {
             builder.append(stack.hasTagCompound() ? stack.getTagCompound().toString() : "");
             builder.append(';');
         }
+    }
+
+    @Unique
+    private String RandomAdditions$getMachineTypeFromOutputs() {
+        final ItemStack[] outputs = this.getOutputs();
+        if (outputs == null) {
+            return "";
+        }
+
+        for (final ItemStack output : outputs) {
+            final String machineType = PatternMachineTypeUtil.readFromItemStack(output);
+            if (!machineType.isEmpty()) {
+                return machineType;
+            }
+        }
+
+        return "";
     }
 }
