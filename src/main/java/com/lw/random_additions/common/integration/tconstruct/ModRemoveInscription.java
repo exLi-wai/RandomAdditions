@@ -29,6 +29,8 @@ import slimeknights.tconstruct.library.modifiers.TinkerGuiException;
 import slimeknights.tconstruct.library.utils.TagUtil;
 import slimeknights.tconstruct.library.utils.TinkerUtil;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.*;
 
 public class ModRemoveInscription implements IModifier, IModifierDisplay {
@@ -47,6 +49,7 @@ public class ModRemoveInscription implements IModifier, IModifierDisplay {
         recipeItems.add(stack);
     }
 
+    @Nonnull
     @Override
     public String getIdentifier() {
         return IDENTIFIER;

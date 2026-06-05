@@ -24,8 +24,8 @@ public class MixinGuiDislocator {
             remap = false
         )
     )
-    public ItemStack randomAdditions$initGetItem(EntityPlayer player, Item item) {
-        return randomAdditions$findItem(player, item);
+    public ItemStack RandomAdditions$initGetItem(EntityPlayer player, Item item) {
+        return RandomAdditions$findItem(player, item);
     }
 
     @Redirect(
@@ -37,12 +37,12 @@ public class MixinGuiDislocator {
             remap = false
         )
     )
-    public ItemStack randomAdditions$updateGetItem(EntityPlayer player, Item item) {
-        return randomAdditions$findItem(player, item);
+    public ItemStack RandomAdditions$updateGetItem(EntityPlayer player, Item item) {
+        return RandomAdditions$findItem(player, item);
     }
 
     @Unique
-    private ItemStack randomAdditions$findItem(EntityPlayer player, Item item) {
+    private ItemStack RandomAdditions$findItem(EntityPlayer player, Item item) {
         ItemStack main = player.getHeldItemMainhand();
         if (!main.isEmpty() && main.getItem() == item) return main;
         ItemStack off = player.getHeldItemOffhand();

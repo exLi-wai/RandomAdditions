@@ -13,7 +13,8 @@ import net.minecraftforge.fml.common.network.NetworkRegistry;
         modid = Tags.MOD_ID,
         name = Tags.MOD_NAME,
         version = Tags.VERSION,
-        dependencies = "required-after:appliedenergistics2"
+        dependencies = "required-after:appliedenergistics2;"
+                + "required-after:jei"
 )
 public class RandomAdditions {
 

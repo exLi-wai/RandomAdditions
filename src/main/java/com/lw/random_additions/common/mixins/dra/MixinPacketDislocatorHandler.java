@@ -24,29 +24,29 @@ import java.lang.reflect.Field;
 public class MixinPacketDislocatorHandler {
 
     @Unique
-    private static Field randomAdditions$functionField;
+    private static Field RandomAdditions$functionField;
 
     @Unique
-    private byte randomAdditions$currentFunction = -1;
+    private byte RandomAdditions$currentFunction = -1;
 
     @Inject(method = "handleMessage*", at = @At("HEAD"), remap = false)
     public void randomAdditions$captureFunction(
             PacketDislocator message,
             MessageContext ctx,
             CallbackInfoReturnable<IMessage> cir) {
-        if (randomAdditions$functionField == null) {
+        if (RandomAdditions$functionField == null) {
             try {
-                randomAdditions$functionField = message.getClass().getDeclaredField("function");
-                randomAdditions$functionField.setAccessible(true);
+                RandomAdditions$functionField = message.getClass().getDeclaredField("function");
+                RandomAdditions$functionField.setAccessible(true);
             } catch (Exception e) {
-                randomAdditions$currentFunction = -1;
+                RandomAdditions$currentFunction = -1;
                 return;
             }
         }
         try {
-            randomAdditions$currentFunction = randomAdditions$functionField.getByte(message);
+            RandomAdditions$currentFunction = RandomAdditions$functionField.getByte(message);
         } catch (Exception e) {
-            randomAdditions$currentFunction = -1;
+            RandomAdditions$currentFunction = -1;
         }
     }
 
@@ -60,24 +60,24 @@ public class MixinPacketDislocatorHandler {
         )
     )
     public ItemStack randomAdditions$getItem(EntityPlayer player, Item item) {
-        boolean checkFuel = (randomAdditions$currentFunction == 8);
+        boolean checkFuel = (RandomAdditions$currentFunction == 8);
 
         ItemStack main = player.getHeldItemMainhand();
-        if (!main.isEmpty() && main.getItem() == item && (!checkFuel || randomAdditions$hasFuel(main))) return main;
+        if (!main.isEmpty() && main.getItem() == item && (!checkFuel || RandomAdditions$hasFuel(main))) return main;
         ItemStack off = player.getHeldItemOffhand();
-        if (!off.isEmpty() && off.getItem() == item && (!checkFuel || randomAdditions$hasFuel(off))) return off;
+        if (!off.isEmpty() && off.getItem() == item && (!checkFuel || RandomAdditions$hasFuel(off))) return off;
         if (Loader.isModLoaded("baubles")) {
             IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
             for (int i = 0; i < baubles.getSlots(); i++) {
                 ItemStack s = baubles.getStackInSlot(i);
-                if (!s.isEmpty() && s.getItem() == item && (!checkFuel || randomAdditions$hasFuel(s))) return s;
+                if (!s.isEmpty() && s.getItem() == item && (!checkFuel || RandomAdditions$hasFuel(s))) return s;
             }
         }
         return ItemStack.EMPTY;
     }
 
     @Unique
-    private static boolean randomAdditions$hasFuel(ItemStack stack) {
+    private static boolean RandomAdditions$hasFuel(ItemStack stack) {
         if (stack.getTagCompound() != null) {
             return !stack.hasTagCompound()
                 || !stack.getTagCompound().hasKey("Fuel")

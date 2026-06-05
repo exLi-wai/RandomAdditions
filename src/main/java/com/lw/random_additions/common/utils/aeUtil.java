@@ -1,4 +1,4 @@
-package com.lw.random_additions.common.util;
+package com.lw.random_additions.common.utils;
 
 import appeng.api.AEApi;
 import appeng.api.config.SecurityPermissions;
@@ -31,7 +31,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.Optional;
 
 import javax.annotation.Nullable;

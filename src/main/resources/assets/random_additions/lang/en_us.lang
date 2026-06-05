@@ -7,6 +7,8 @@ random_additions.me_storage.count=ME network storage: %s
 random_additions.fluid_storage.count=ME network storage: %s %s
 random_additions.me_storage.craftable=[Craftable]
 random_additions.me_grid.node_count=ME network nodes: %s
+random_additions.ae2.pattern.machine_type=Machine type: %s
+random_additions.ae2.pattern.encoding_type.crafting=Encoding type: Crafting
 
 modifier.remove_inscription.name=Forget
 modifier.remove_inscription.desc=§oClean slate!§r\nRemoves all inscriptions from the tool.

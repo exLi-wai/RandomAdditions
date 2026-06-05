@@ -13,7 +13,7 @@ import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
 import appeng.client.gui.AEBaseGui;
 import com.lw.random_additions.Tags;
-import com.lw.random_additions.common.util.aeUtil;
+import com.lw.random_additions.common.utils.aeUtil;
 import mcjty.theoneprobe.api.*;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;

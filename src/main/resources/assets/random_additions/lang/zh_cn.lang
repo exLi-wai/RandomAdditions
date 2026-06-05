@@ -7,9 +7,12 @@ random_additions.me_storage.count=ME网络存储数量: %s
 random_additions.fluid_storage.count=ME网络存储数量: %s %s
 random_additions.me_storage.craftable=[可合成]
 random_additions.me_grid.node_count=ME网络节点数量: %s
+random_additions.ae2.pattern.machine_type=机器类型: %s
+random_additions.ae2.pattern.encoding_type.crafting=编码类型: 合成
 
 modifier.remove_inscription.name=忘却
 modifier.remove_inscription.desc=§o从头再来！§r\n清除武器上的所有刻印。
 modifier.remove_inscription.book.text=从头再来！清除武器上的所有刻印，移除所有额外特性。
 modifier.remove_inscription.book.effect1=清除武器上的所有刻印
 modifier.remove_inscription.book.effect2=添加新刻印后可再次使用
+

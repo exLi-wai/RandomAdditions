@@ -2,6 +2,7 @@ package com.lw.random_additions.common.network;
 
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
+import com.lw.random_additions.common.init.Mods;
 import io.netty.buffer.ByteBuf;
 import lumien.randomthings.entitys.EntityTimeAccelerator;
 import lumien.randomthings.item.ItemTimeInABottle;
@@ -144,7 +145,7 @@ public class PacketTimeBottle implements IMessage {
                 if (stack.getItem() instanceof ItemTimeInABottle) return stack;
             }
 
-            if (Loader.isModLoaded("baubles")) {
+            if (Mods.BAUBLES.isLoaded()) {
                 IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
                 if (baubles != null) {
                     for (int i = 0; i < baubles.getSlots(); i++) {
