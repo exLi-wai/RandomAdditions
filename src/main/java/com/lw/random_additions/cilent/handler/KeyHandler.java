@@ -18,7 +18,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
-import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraftforge.fml.common.network.internal.FMLNetworkHandler;
@@ -78,7 +77,7 @@ public class KeyHandler {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (player == null || Minecraft.getMinecraft().currentScreen != null) return;
 
-                if (!Loader.isModLoaded("baubles")) return;
+                if (Mods.BAUBLES.isLoaded()) return;
                 IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
                 boolean found = false;
                 for (int i = 0; i < baubles.getSlots(); i++) {

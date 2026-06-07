@@ -1,7 +1,6 @@
 package com.lw.random_additions.common.config;
 
 import com.lw.random_additions.Tags;
-import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Config;
 import net.minecraftforge.common.config.ConfigManager;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
@@ -12,45 +11,52 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 @Config.LangKey("RandomAdditions.config.title")
 public class RandomAdditionsConfig {
 
-    @Config.Comment({
-            "无法溶解在 坩埚/源质冶炼炉 中的物品",
-            "格式: 物品ID",
-            "示例: minecraft:dirt"
-    })
-    @Config.Name("神秘坩埚不可溶解物品白名单")
-    @Config.RequiresMcRestart
-    public static String[] CrucibleInsolubleWhitelist = {
-            "minecraft:dirt",
-            "minecraft:grass"
-    };
+    @Config.Name("thaumcraft")
+    public static final Thaumcraft THAUMCRAFT = new Thaumcraft();
 
-    @Config.Name("神秘源质冶炼炉不可溶解物品白名单")
-    @Config.RequiresMcRestart
-    public static String[] SmelterInsolubleWhitelist = {
-            "minecraft:dirt",
-            "minecraft:grass"
-    };
+    @Config.Name("compatibility")
+    public static final Compatibility COMPATIBILITY = new Compatibility();
 
-    @Config.Name("魔导手册是否可提交匠魂工具")
-    @Config.RequiresMcRestart
-    public static boolean checkEnchantedPlaceholder = true;
 
-    public static boolean crucibleWhitelist(ItemStack item) {
-        for (String itemId : CrucibleInsolubleWhitelist) {
-            if (item.getItem().getRegistryName().toString().equals(itemId)) {
-                return true;
-            }
-        }
-        return false;
+    public static final class Thaumcraft{
+
+        @Config.Comment({
+                "CannotDissolveIn  Thaumcraft Crucible/EssentiaSmeltery Items",
+                "format: Item ID",
+                "example: minecraft:dirt"
+        })
+        @Config.Name("Thaumcraft Crucible Insoluble Item Whitelist")
+        @Config.RequiresMcRestart
+        public String[] CrucibleInsolubleWhitelist = {
+                "minecraft:dirt",
+                "minecraft:grass"
+        };
+
+        @Config.Name("Thaumcraft Essentia Smeltery Insoluble Item Whitelist")
+        @Config.RequiresMcRestart
+        public String[] SmelterInsolubleWhitelist = {
+                "minecraft:dirt",
+                "minecraft:grass"
+        };
+
+    @Config.Name("Thaumonomicon Submissions Are Not Allowed TinkersConstruct Tools")
+    @Config.RequiresMcRestart
+    public boolean CheckEnchantedPlaceholder = true;
+
     }
 
-    public static boolean TileSmelterWhitelist(ItemStack item) {
-        for (String itemId : SmelterInsolubleWhitelist) {
-            if (item.getItem().getRegistryName().toString().equals(itemId)) {
-                return true;
-            }
-        }
-        return false;
+    public static final class Compatibility{
+        @Config.Name("enableMEGirdNodeAmount")
+        @Config.Comment("Enable The One Probe compatibility MEGirdNodeAmount")
+        public boolean EnableMEGirdNodeAmount = true;
+
+        @Config.Name("enableMEStorageInfoProvider")
+        @Config.Comment("Enable The One Probe compatibility MEStorageInfoProvider")
+        public boolean EnableMEStorageInfoProvider = true;
+
+        @Config.Name("enable MEStorageInfoProvider in onItemTooltip")
+        @Config.Comment("enable MEStorageInfoProvider in onItemTooltip")
+        public boolean EnableMEStorageInfoProviderInOnItemTooltip = true;
     }
 
     @Mod.EventBusSubscriber(modid = Tags.MOD_ID)

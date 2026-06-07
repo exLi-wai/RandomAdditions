@@ -20,7 +20,7 @@ public class MixinInventoryUtils {
     )
 
     private static void checkEnchantedPlaceholder(ItemStack stack, ItemStack stack2, CallbackInfoReturnable<Boolean> cir) {
-        if(RandomAdditionsConfig.checkEnchantedPlaceholder){
+        if(RandomAdditionsConfig.THAUMCRAFT.CheckEnchantedPlaceholder){
             if (stack != null && !stack.isEmpty() && stack2 != null && !stack2.isEmpty()) {
                 if (stack.getItem() instanceof ToolCore || stack2.getItem() instanceof ToolCore) {
                     cir.setReturnValue(false);

@@ -13,6 +13,7 @@ import appeng.api.storage.data.IItemList;
 import appeng.api.util.AEPartLocation;
 import appeng.client.gui.AEBaseGui;
 import com.lw.random_additions.Tags;
+import com.lw.random_additions.common.config.RandomAdditionsConfig;
 import com.lw.random_additions.common.utils.aeUtil;
 import mcjty.theoneprobe.api.*;
 import net.minecraft.block.Block;
@@ -172,59 +173,61 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         @SubscribeEvent
         @SideOnly(Side.CLIENT)
         public static void onItemTooltip(ItemTooltipEvent event) {
-            EntityPlayer player = event.getEntityPlayer();
-            if (player == null) return;
+            if(RandomAdditionsConfig.COMPATIBILITY.EnableMEStorageInfoProviderInOnItemTooltip){
+                EntityPlayer player = event.getEntityPlayer();
+                if (player == null) return;
 
-            ItemStack itemStack = event.getItemStack();
-            if (itemStack.isEmpty()) return;
+                ItemStack itemStack = event.getItemStack();
+                if (itemStack.isEmpty()) return;
 
-            if (Minecraft.getMinecraft().currentScreen instanceof AEBaseGui) return;
+                if (Minecraft.getMinecraft().currentScreen instanceof AEBaseGui) return;
 
-            long now = Minecraft.getSystemTime();
-            boolean hitCache = now - lastQueryTime < 1000
-                    && !lastQueriedItem.isEmpty()
-                    && ItemStack.areItemStacksEqualUsingNBTShareTag(lastQueriedItem, itemStack);
+                long now = Minecraft.getSystemTime();
+                boolean hitCache = now - lastQueryTime < 1000
+                        && !lastQueriedItem.isEmpty()
+                        && ItemStack.areItemStacksEqualUsingNBTShareTag(lastQueriedItem, itemStack);
 
-            StringBuilder tooltipText = new StringBuilder();
+                StringBuilder tooltipText = new StringBuilder();
 
-            if (hitCache) {
-                if (cachedCraftable) {
-                    tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
-                }
-                tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", cachedCount));
-            } else {
-                hoverStartTime = now;
-
-                ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
-                if (terminal == null || terminal.isEmpty()) return;
-
-                IGrid grid = aeUtil.getGridFromTerminal(terminal, player, player.getPosition());
-                if (grid == null) {
-                    grid = aeUtil.getGridFromTerminalNBT(terminal, player);
-                    if (grid == null) return;
-                }
-
-                long count;
-                if (itemStack.hasTagCompound()) {
-                    count = getItemCountWithNBT(grid, itemStack);
+                if (hitCache) {
+                    if (cachedCraftable) {
+                        tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
+                    }
+                    tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", cachedCount));
                 } else {
-                    count = MEStorageInfoProvider.getItemCountInGridByItemStack(grid, itemStack);
+                    hoverStartTime = now;
+
+                    ItemStack terminal = aeUtil.getWirelessTerminalFromPlayer(player);
+                    if (terminal == null || terminal.isEmpty()) return;
+
+                    IGrid grid = aeUtil.getGridFromTerminal(terminal, player, player.getPosition());
+                    if (grid == null) {
+                        grid = aeUtil.getGridFromTerminalNBT(terminal, player);
+                        if (grid == null) return;
+                    }
+
+                    long count;
+                    if (itemStack.hasTagCompound()) {
+                        count = getItemCountWithNBT(grid, itemStack);
+                    } else {
+                        count = MEStorageInfoProvider.getItemCountInGridByItemStack(grid, itemStack);
+                    }
+                    boolean craftable = aeUtil.isCraftable(grid, itemStack);
+
+                    lastQueryTime = now;
+                    lastQueriedItem = itemStack.copy();
+                    cachedCount = count;
+                    cachedCraftable = craftable;
+
+                    if (craftable) {
+                        tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
+                    }
+                    tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", count));
                 }
-                boolean craftable = aeUtil.isCraftable(grid, itemStack);
 
-                lastQueryTime = now;
-                lastQueriedItem = itemStack.copy();
-                cachedCount = count;
-                cachedCraftable = craftable;
-
-                if (craftable) {
-                    tooltipText.append("§a").append(I18n.format("random_additions.me_storage.craftable")).append(" ");
+                if (tooltipText.length() > 0) {
+                    event.getToolTip().add(tooltipText.toString());
                 }
-                tooltipText.append("§7").append(I18n.format("random_additions.me_storage.count", count));
-            }
-
-            if (tooltipText.length() > 0) {
-                event.getToolTip().add(tooltipText.toString());
             }
         }
 

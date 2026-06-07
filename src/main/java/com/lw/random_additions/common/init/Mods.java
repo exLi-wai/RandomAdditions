@@ -7,7 +7,8 @@ public enum Mods {
     BAUBLES("baubles"),
     RD("randomthings"),
     AE2FC("ae2fc"),
-    TC("tconstruct");
+    TC("tconstruct"),
+    TOP("theoneprobe");
 
     public final String modid;
 

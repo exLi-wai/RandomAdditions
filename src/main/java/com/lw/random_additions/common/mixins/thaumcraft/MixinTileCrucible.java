@@ -1,6 +1,6 @@
 package com.lw.random_additions.common.mixins.thaumcraft;
 
-import com.lw.random_additions.common.config.RandomAdditionsConfig;
+import com.lw.random_additions.common.utils.ThaumicUtil;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,7 +23,7 @@ public class MixinTileCrucible {
             remap = false
     )
     public AspectList onAttemptSmelt(AspectList original, ItemStack item){
-        if (RandomAdditionsConfig.crucibleWhitelist(item)) {
+        if (ThaumicUtil.crucibleWhitelist(item)) {
             return null;
         }
         return original;

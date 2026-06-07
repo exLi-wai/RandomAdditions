@@ -1,6 +1,6 @@
 package com.lw.random_additions.common.mixins.thaumcraft;
 
-import com.lw.random_additions.common.config.RandomAdditionsConfig;
+import com.lw.random_additions.common.utils.ThaumicUtil;
 import net.minecraft.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +19,7 @@ public class MixinTileSmelter {
     private void onCanSmelt(CallbackInfoReturnable<Boolean> cir) {
         ItemStack stack = ((TileSmelter)(Object)this).getStackInSlot(0);
 
-        if (!stack.isEmpty() && RandomAdditionsConfig.TileSmelterWhitelist(stack)) {
+        if (!stack.isEmpty() && ThaumicUtil.TileSmelterWhitelist(stack)) {
             cir.setReturnValue(false);
         }
     }

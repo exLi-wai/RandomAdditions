@@ -33,6 +33,7 @@ import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fml.common.Optional;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class aeUtil {
@@ -40,7 +41,7 @@ public class aeUtil {
     /**
      * 获取玩家背包中的无线终端
      */
-    @Nullable
+    @Nonnull
     public static ItemStack getWirelessTerminalFromPlayer(EntityPlayer player) {
         for (ItemStack stack : player.inventory.mainInventory) {
             if (!stack.isEmpty() && stack.getItem() instanceof ToolWirelessTerminal) {
