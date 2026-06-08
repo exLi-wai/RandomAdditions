@@ -1,0 +1,15 @@
+{
+  "package": "com.lw.random_additions.common.mixins.ae2fc",
+  "required": true,
+  "refmap": "mixins.random_additions.refmap.json",
+  "target": "@env(DEFAULT)",
+  "minVersion": "0.8.5",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "MixinFluidPatternDetails"
+  ],
+  "server": [],
+  "client": [
+    "MixinRecipeTransferBuilder"
+  ]
+}

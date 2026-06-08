@@ -20,6 +20,7 @@ public class MixinConfig implements ILateMixinLoader {
         addModdedMixinCFG("mixins.random_additions.dra.json", "draconicevolution");
         addModdedMixinCFG("mixins.random_additions.randomthing.json", "randomthings");
         addModdedMixinCFG("mixins.random_additions.ae2.json", "appliedenergistics2");
+        addModdedMixinCFG("mixins.random_additions.ae2fc.json", "ae2fc");
     }
 
     @Override
