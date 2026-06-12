@@ -2,6 +2,7 @@ package com.lw.random_additions.cilent.handler;
 
 import baubles.api.BaublesApi;
 import baubles.api.cap.IBaublesItemHandler;
+import com.brandon3055.draconicevolution.DEFeatures;
 import com.brandon3055.draconicevolution.DraconicEvolution;
 import com.lw.random_additions.common.init.Mods;
 import com.lw.random_additions.common.network.NetworkHandler;
@@ -77,12 +78,13 @@ public class KeyHandler {
                 EntityPlayer player = Minecraft.getMinecraft().player;
                 if (player == null || Minecraft.getMinecraft().currentScreen != null) return;
 
-                if (Mods.BAUBLES.isLoaded()) return;
+                if (!Mods.BAUBLES.isLoaded()) return;
                 IBaublesItemHandler baubles = BaublesApi.getBaublesHandler(player);
+                if (baubles == null) return;
                 boolean found = false;
                 for (int i = 0; i < baubles.getSlots(); i++) {
                     ItemStack s = baubles.getStackInSlot(i);
-                    if (!s.isEmpty() && s.getItem() == com.brandon3055.draconicevolution.DEFeatures.dislocatorAdvanced) {
+                    if (!s.isEmpty() && s.getItem() == DEFeatures.dislocatorAdvanced) {
                         found = true;
                         break;
                     }
