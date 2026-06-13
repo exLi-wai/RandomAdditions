@@ -5,7 +5,6 @@ import com.lw.random_additions.common.utils.PatternMachineTypeUtil;
 import com.lw.random_additions.api.PatternMachineType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -69,11 +68,6 @@ public abstract class MixinContainerPatternTerm implements PatternMachineType {
     private NBTTagCompound RandomAdditions$writeMachineTypeToPattern(final NBTTagCompound encodedValue) {
         if (!this.isCraftingMode() && this.RandomAdditions$hasFreshJeiMachineType()) {
             PatternMachineTypeUtil.write(encodedValue, this.RandomAdditions$jeiMachineType);
-        } else if (!this.isCraftingMode()) {
-            final String outputMachineType = this.RandomAdditions$getMachineTypeFromOutputs();
-            if (!outputMachineType.isEmpty()) {
-                PatternMachineTypeUtil.write(encodedValue, outputMachineType);
-            }
         }
         PatternMachineTypeUtil.stripFromEncodedPattern(encodedValue);
         return encodedValue;
@@ -113,8 +107,7 @@ public abstract class MixinContainerPatternTerm implements PatternMachineType {
                 continue;
             }
 
-            final ResourceLocation id = stack.getItem().getRegistryName();
-            builder.append(id == null ? "" : id.toString());
+            builder.append(stack.getItem().getRegistryName());
             builder.append(',');
             builder.append(stack.getMetadata());
             builder.append(',');
@@ -123,22 +116,5 @@ public abstract class MixinContainerPatternTerm implements PatternMachineType {
             builder.append(stack.hasTagCompound() ? stack.getTagCompound().toString() : "");
             builder.append(';');
         }
-    }
-
-    @Unique
-    private String RandomAdditions$getMachineTypeFromOutputs() {
-        final ItemStack[] outputs = this.getOutputs();
-        if (outputs == null) {
-            return "";
-        }
-
-        for (final ItemStack output : outputs) {
-            final String machineType = PatternMachineTypeUtil.readFromItemStack(output);
-            if (!machineType.isEmpty()) {
-                return machineType;
-            }
-        }
-
-        return "";
     }
 }
