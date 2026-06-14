@@ -25,6 +25,7 @@ public abstract class MixinRecipeTransferHandler {
             )
     )
     private void RandomAdditions$captureJeiMachineType(final Container container, final IRecipeLayout recipeLayout, final EntityPlayer player, final boolean maxTransfer, final boolean doTransfer, final CallbackInfoReturnable<IRecipeTransferError> cir) {
+        PatternMachineTypeUtil.clearCurrentJeiMachineType();
         if (recipeLayout != null && recipeLayout.getRecipeCategory() != null) {
             PatternMachineTypeUtil.setCurrentJeiMachineType(PatternMachineTypeUtil.machineType(recipeLayout.getRecipeCategory()));
         }

@@ -37,13 +37,14 @@ public abstract class MixinPacketJEIRecipe {
     @Inject(method = "serverPacketData", at = @At("HEAD"))
     private void RandomAdditions$setMachineTypeOnContainer(final INetworkInfo manager, final AppEngPacket packet, final EntityPlayer player, final CallbackInfo ci) {
         final String machineType = PatternMachineTypeUtil.sanitize(this.RandomAdditions$jeiMachineType);
-        if (machineType.isEmpty()) {
-            return;
-        }
-
         final Container container = player.openContainer;
         if (container instanceof ContainerPatternEncoder && container instanceof PatternMachineType) {
-            ((PatternMachineType) container).RandomAdditions$setJeiMachineType(machineType);
+            final PatternMachineType patternMachineType = (PatternMachineType) container;
+            if (machineType.isEmpty()) {
+                patternMachineType.RandomAdditions$clearJeiMachineType();
+            } else {
+                patternMachineType.RandomAdditions$setJeiMachineType(machineType);
+            }
         }
     }
 }

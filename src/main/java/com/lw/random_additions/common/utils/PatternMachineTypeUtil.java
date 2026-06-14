@@ -76,63 +76,6 @@ public final class PatternMachineTypeUtil {
         CURRENT_JEI_MACHINE_TYPE.remove();
     }
 
-    public static void writeToItemStackTag(final NBTTagCompound stackNbt, final String machineType) {
-        if (stackNbt == null) {
-            return;
-        }
-
-        final String sanitized = sanitize(machineType);
-        if (sanitized.isEmpty()) {
-            removeFromItemStackTag(stackNbt);
-            return;
-        }
-
-        final NBTTagCompound itemTag = stackNbt.hasKey("tag", 10) ? stackNbt.getCompoundTag("tag") : new NBTTagCompound();
-        itemTag.setString(NBT_KEY, sanitized);
-        stackNbt.setTag("tag", itemTag);
-    }
-
-    public static void writeToItemStack(final ItemStack stack, final String machineType) {
-        if (stack == null || stack.isEmpty()) {
-            return;
-        }
-
-        final String sanitized = sanitize(machineType);
-        if (sanitized.isEmpty()) {
-            return;
-        }
-
-        final NBTTagCompound tag = stack.hasTagCompound() ? stack.getTagCompound() : new NBTTagCompound();
-        tag.setString(NBT_KEY, sanitized);
-        stack.setTagCompound(tag);
-    }
-
-    public static String readFromItemStack(final ItemStack stack) {
-        if (stack == null || stack.isEmpty()) {
-            return "";
-        }
-
-        return read(stack.getTagCompound());
-    }
-
-    public static String readFromStackList(final NBTTagCompound encodedValue, final String... keys) {
-        if (encodedValue == null) {
-            return "";
-        }
-
-        for (final String key : keys) {
-            final NBTTagList stacks = encodedValue.getTagList(key, 10);
-            for (int i = 0; i < stacks.tagCount(); i++) {
-                final String machineType = readFromStackNbt(stacks.getCompoundTagAt(i));
-                if (!machineType.isEmpty()) {
-                    return machineType;
-                }
-            }
-        }
-
-        return "";
-    }
-
     public static void stripFromEncodedPattern(final NBTTagCompound encodedValue) {
         if (encodedValue == null) {
             return;
@@ -162,14 +105,6 @@ public final class PatternMachineTypeUtil {
         } else {
             stackNbt.setTag("tag", itemTag);
         }
-    }
-
-    private static String readFromStackNbt(final NBTTagCompound stackNbt) {
-        if (stackNbt == null || !stackNbt.hasKey("tag", 10)) {
-            return "";
-        }
-
-        return read(stackNbt.getCompoundTag("tag"));
     }
 
     public static String machineType(final IRecipeCategory recipeCategory) {

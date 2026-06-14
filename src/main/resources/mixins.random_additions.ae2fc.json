@@ -6,8 +6,14 @@
   "minVersion": "0.8.5",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "MixinFluidPatternDetails"
+    "MixinCPacketLoadPattern",
+    "MixinCPacketLoadPatternHandler",
+    "MixinFluidPatternEncoderMachineType",
+    "MixinFluidPatternDetails",
+    "MixinFluidPatternTerminalMachineType"
   ],
   "server": [],
-  "client": []
+  "client": [
+    "MixinRecipeTransferBuilder"
+  ]
 }

@@ -16,10 +16,7 @@ public abstract class MixinFluidPatternDetails {
             index = 0
     )
     private NBTTagCompound RandomAdditions$writeMachineTypeToPattern(final NBTTagCompound encodedValue) {
-        final String machineType = PatternMachineTypeUtil.readFromStackList(encodedValue, "Outputs", "out");
-        if (!machineType.isEmpty()) {
-            PatternMachineTypeUtil.write(encodedValue, machineType);
-        }
+        PatternMachineTypeUtil.write(encodedValue, PatternMachineTypeUtil.getCurrentJeiMachineType());
         PatternMachineTypeUtil.stripFromEncodedPattern(encodedValue);
         return encodedValue;
     }
