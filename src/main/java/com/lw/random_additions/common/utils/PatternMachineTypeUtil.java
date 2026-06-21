@@ -1,10 +1,13 @@
 package com.lw.random_additions.common.utils;
 
+import appeng.api.storage.data.IAEItemStack;
+import appeng.util.item.AEItemStack;
 import com.lw.random_additions.common.integration.jei.JeiPlugin;
 import mezz.jei.api.IJeiRuntime;
 import mezz.jei.api.ingredients.IIngredientHelper;
 import mezz.jei.api.ingredients.IIngredientRegistry;
 import mezz.jei.api.recipe.IRecipeCategory;
+import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.item.ItemStack;
@@ -89,21 +92,70 @@ public final class PatternMachineTypeUtil {
 
     private static void stripFromStackList(final NBTTagList stacks) {
         for (int i = 0; i < stacks.tagCount(); i++) {
-            removeFromItemStackTag(stacks.getCompoundTagAt(i));
+            stripFromStackTag(stacks.getCompoundTagAt(i));
         }
     }
 
-    private static void removeFromItemStackTag(final NBTTagCompound stackNbt) {
-        if (stackNbt == null || !stackNbt.hasKey("tag", 10)) {
+    public static void stripFromStackTag(final NBTTagCompound stackNbt) {
+        if (stackNbt == null) {
             return;
         }
 
-        final NBTTagCompound itemTag = stackNbt.getCompoundTag("tag");
-        itemTag.removeTag(NBT_KEY);
-        if (itemTag.getKeySet().isEmpty()) {
-            stackNbt.removeTag("tag");
-        } else {
-            stackNbt.setTag("tag", itemTag);
+        removeMachineTypeRecursive(stackNbt);
+        removeEmptyCompound(stackNbt, "tag");
+        removeEmptyCompound(stackNbt, "Tag");
+    }
+
+    public static void stripFromAeItemStacks(final IAEItemStack[] stacks) {
+        if (stacks == null) {
+            return;
+        }
+
+        for (int i = 0; i < stacks.length; i++) {
+            stacks[i] = stripFromAeItemStack(stacks[i]);
+        }
+    }
+
+    private static IAEItemStack stripFromAeItemStack(final IAEItemStack stack) {
+        if (stack == null) {
+            return null;
+        }
+
+        final NBTTagCompound tag = new NBTTagCompound();
+        stack.writeToNBT(tag);
+        stripFromStackTag(tag);
+
+        final IAEItemStack clean = AEItemStack.fromNBT(tag);
+        return clean == null ? stack : clean;
+    }
+
+    private static void removeMachineTypeRecursive(final NBTTagCompound tag) {
+        tag.removeTag(NBT_KEY);
+
+        for (final String key : tag.getKeySet().toArray(new String[0])) {
+            final NBTBase value = tag.getTag(key);
+            if (value instanceof NBTTagCompound) {
+                removeMachineTypeRecursive((NBTTagCompound) value);
+            } else if (value instanceof NBTTagList) {
+                removeMachineTypeFromList((NBTTagList) value);
+            }
+        }
+    }
+
+    private static void removeMachineTypeFromList(final NBTTagList list) {
+        for (int i = 0; i < list.tagCount(); i++) {
+            final NBTBase value = list.get(i);
+            if (value instanceof NBTTagCompound) {
+                removeMachineTypeRecursive((NBTTagCompound) value);
+            } else if (value instanceof NBTTagList) {
+                removeMachineTypeFromList((NBTTagList) value);
+            }
+        }
+    }
+
+    private static void removeEmptyCompound(final NBTTagCompound parent, final String key) {
+        if (parent.hasKey(key, 10) && parent.getCompoundTag(key).getKeySet().isEmpty()) {
+            parent.removeTag(key);
         }
     }
 
