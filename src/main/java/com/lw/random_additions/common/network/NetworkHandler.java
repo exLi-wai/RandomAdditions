@@ -15,6 +15,9 @@ public class NetworkHandler {
 
     public static void registerPackets() {
         CHANNEL.registerMessage(PacketWirelessInput.Handler.class, PacketWirelessInput.class, packetId++, Side.SERVER);
+        CHANNEL.registerMessage(PacketPatternUploadRequest.Handler.class, PacketPatternUploadRequest.class, packetId++, Side.SERVER);
+        CHANNEL.registerMessage(PacketPatternUploadSelect.Handler.class, PacketPatternUploadSelect.class, packetId++, Side.SERVER);
+        CHANNEL.registerMessage(PacketPatternUploadTargets.Handler.class, PacketPatternUploadTargets.class, packetId++, Side.CLIENT);
         if(Mods.RD.isLoaded()){
             CHANNEL.registerMessage(PacketTimeBottle.Handler.class, PacketTimeBottle.class, packetId++, Side.SERVER);
         }

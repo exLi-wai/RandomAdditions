@@ -14,6 +14,8 @@
   "server": [],
   "client": [
     "MixinItemEncodedPattern",
-    "MixinAEBaseGui"
+    "MixinAEBaseGui",
+    "MixinGuiPatternTerm",
+    "MixinGuiImgButton"
   ]
 }
