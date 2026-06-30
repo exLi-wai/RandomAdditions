@@ -161,7 +161,7 @@ dependencies {
     implementation rfg.deobf ('mezz:jei:4.30.3')
 
     compileOnly rfg.deobf ("curse.maven:thaumcraft-223628:2629023")
-    compileOnly rfg.deobf ("curse.maven:AE2FluidCraftReworkUnofficial-1404390:7742544")
+    implementation rfg.deobf ("curse.maven:AE2FluidCraftReworkUnofficial-1404390:7742544")
     compileOnly rfg.deobf ("curse.maven:ThaumicAdditions-232564:5394706")
     compileOnly rfg.deobf ("curse.maven:HammerLib-247401:6348753")
     compileOnly rfg.deobf ("curse.maven:TConstruct-74072:2902483")

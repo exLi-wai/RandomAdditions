@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.io.IOException;
 
-@Mixin(value = AEBaseGui.class, remap = false)
+@Mixin(value = AEBaseGui.class, remap = false, priority = 4000)
 public abstract class MixinAEBaseGui {
 
     @Inject(method = "bookmarkedJEIghostItem", at = @At("HEAD"), cancellable = true)
@@ -24,7 +24,7 @@ public abstract class MixinAEBaseGui {
         }
     }
 
-    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    @Inject(method = {"mouseClicked", "func_73864_a"}, at = @At("HEAD"), cancellable = true)
     private void RandomAdditions$handlePatternUploadClick(final int mouseX, final int mouseY, final int mouseButton,
                                                           final CallbackInfo ci) {
         if ((Object) this instanceof PatternUploadScreen
@@ -33,7 +33,7 @@ public abstract class MixinAEBaseGui {
         }
     }
 
-    @Inject(method = "drawScreen", at = @At("RETURN"))
+    @Inject(method = {"drawScreen", "func_73863_a"}, at = @At("RETURN"))
     private void RandomAdditions$drawPatternUploadOverlay(final int mouseX, final int mouseY, final float partialTicks,
                                                           final CallbackInfo ci) {
         if ((Object) this instanceof PatternUploadScreen) {
@@ -50,7 +50,7 @@ public abstract class MixinAEBaseGui {
         }
     }
 
-    @Inject(method = "handleMouseInput", at = @At("HEAD"), cancellable = true)
+    @Inject(method = {"handleMouseInput", "func_146274_d"}, at = @At("HEAD"), cancellable = true)
     private void RandomAdditions$handlePatternUploadMouseInput(final CallbackInfo ci) throws IOException {
         if (!((Object) this instanceof PatternUploadScreen)) {
             return;

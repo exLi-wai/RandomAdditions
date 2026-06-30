@@ -97,14 +97,11 @@ public class InterfaceEndpointFinder implements PatternUploadEndpointFinder {
     }
 
     private static ItemStack getIcon(IInterfaceHost host) {
-        try {
-            Object icon = host.getClass().getMethod("getItemStackRepresentation").invoke(host);
-            if (icon instanceof ItemStack) {
-                return PatternUploadGroupKey.sanitizeIcon((ItemStack) icon);
-            }
-        } catch (ReflectiveOperationException ignored) {
+        TileEntity tile = host.getTileEntity();
+        if (tile == null || tile.getWorld() == null) {
+            return ItemStack.EMPTY;
         }
-        return ItemStack.EMPTY;
+        return getBlockIcon(tile.getWorld(), tile.getPos());
     }
 
     private static PatternUploadGroupKey resolveAdjacentTarget(IInterfaceHost host) {

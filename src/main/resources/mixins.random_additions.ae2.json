@@ -6,6 +6,7 @@
   "minVersion": "0.8.5",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AccessorPacketValueConfig",
     "MixinContainerPatternTerm",
     "MixinPacketJEIRecipe",
     "MixinPatternHelper",
@@ -15,6 +16,7 @@
   "client": [
     "MixinItemEncodedPattern",
     "MixinAEBaseGui",
+    "MixinAE2NetworkHandler",
     "MixinGuiPatternTerm",
     "MixinGuiImgButton"
   ]
