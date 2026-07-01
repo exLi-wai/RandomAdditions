@@ -237,14 +237,18 @@ public class MEStorageInfoProvider implements IProbeInfoProvider {
         private static long getItemCountWithNBT(IGrid grid, ItemStack targetStack) {
             if (targetStack.isEmpty() || !targetStack.hasTagCompound()) return 0;
 
-            IItemList<IAEItemStack> list = MEStorageInfoProvider.getItemStorageList(grid);
-            if (list == null || list.isEmpty()) return 0;
+            try {
+                IItemList<IAEItemStack> list = MEStorageInfoProvider.getItemStorageList(grid);
+                if (list == null) return 0;
 
-            IAEItemStack searchStack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(targetStack);
-            if (searchStack == null) return 0;
+                IAEItemStack searchStack = AEApi.instance().storage().getStorageChannel(IItemStorageChannel.class).createStack(targetStack);
+                if (searchStack == null) return 0;
 
-            IAEItemStack found = list.findPrecise(searchStack);
-            return found != null ? found.getStackSize() : 0;
+                IAEItemStack found = list.findPrecise(searchStack);
+                return found != null ? found.getStackSize() : 0;
+            } catch (NullPointerException e) {
+                return 0;
+            }
         }
 
     }
