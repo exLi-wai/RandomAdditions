@@ -1,18 +1,19 @@
 package com.lw.random_additions.common.integration.ae2.patternupload;
 
 import appeng.api.networking.IGrid;
+import com.lw.random_additions.common.init.Mods;
 import net.minecraft.item.ItemStack;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class PatternUploadTargetFinder {
 
-    private static final List<PatternUploadEndpointFinder> FINDERS = Collections.singletonList(new InterfaceEndpointFinder());
+    private static final String MMCE_FINDER_CLASS =
+            "com.lw.random_additions.common.integration.ae2.patternupload.mmce.MMCEPatternProviderEndpointFinder";
 
     private PatternUploadTargetFinder() {
     }
@@ -24,7 +25,7 @@ public final class PatternUploadTargetFinder {
         }
 
         List<PatternUploadEndpoint> endpoints = new ArrayList<>();
-        for (PatternUploadEndpointFinder finder : FINDERS) {
+        for (PatternUploadEndpointFinder finder : createFinders()) {
             finder.findEndpoints(grid, encodedPattern, endpoints);
         }
 
@@ -37,6 +38,25 @@ public final class PatternUploadTargetFinder {
         }
 
         return getPatternUploadGroups(encodedPattern, groups);
+    }
+
+    private static List<PatternUploadEndpointFinder> createFinders() {
+        List<PatternUploadEndpointFinder> finders = new ArrayList<>();
+        finders.add(new InterfaceEndpointFinder());
+        if (Mods.MMCE.isLoaded()) {
+            addMMCEFinder(finders);
+        }
+        return finders;
+    }
+
+    private static void addMMCEFinder(final List<PatternUploadEndpointFinder> finders) {
+        try {
+            final Object finder = Class.forName(MMCE_FINDER_CLASS).getConstructor().newInstance();
+            if (finder instanceof PatternUploadEndpointFinder) {
+                finders.add((PatternUploadEndpointFinder) finder);
+            }
+        } catch (ReflectiveOperationException | LinkageError ignored) {
+        }
     }
 
     @Nonnull

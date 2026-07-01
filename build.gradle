@@ -161,7 +161,7 @@ dependencies {
     implementation rfg.deobf ('mezz:jei:4.30.3')
 
     compileOnly rfg.deobf ("curse.maven:thaumcraft-223628:2629023")
-    implementation rfg.deobf ("curse.maven:AE2FluidCraftReworkUnofficial-1404390:7742544")
+    compileOnly rfg.deobf ("curse.maven:AE2FluidCraftReworkUnofficial-1404390:7742544")
     compileOnly rfg.deobf ("curse.maven:ThaumicAdditions-232564:5394706")
     compileOnly rfg.deobf ("curse.maven:HammerLib-247401:6348753")
     compileOnly rfg.deobf ("curse.maven:TConstruct-74072:2902483")
@@ -169,6 +169,7 @@ dependencies {
     compileOnly rfg.deobf ("curse.maven:DraconicEvolution-223565:3431261")
     compileOnly rfg.deobf ("curse.maven:brandons-core-231382:3408276")
     compileOnly rfg.deobf ("curse.maven:QuantumThings-1387363:7931375")
+    compileOnly rfg.deobf("curse.maven:mmce-817377:6945422")
 
     if (propertyBool('use_asset_mover')) {
         implementation "com.cleanroommc:assetmover:${propertyString('asset_mover_version')}"

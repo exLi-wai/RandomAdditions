@@ -7,6 +7,7 @@ public enum Mods {
     BAUBLES("baubles"),
     RD("randomthings"),
     AE2FC("ae2fc"),
+    MMCE("modularmachinery"),
     TC("tconstruct"),
     TOP("theoneprobe");
 

@@ -4,7 +4,9 @@ import appeng.api.networking.IGrid;
 import appeng.api.networking.IGridHost;
 import appeng.api.networking.IGridNode;
 import appeng.helpers.IInterfaceHost;
+import com.lw.random_additions.common.init.Mods;
 import net.minecraft.block.Block;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -20,6 +22,8 @@ import java.util.Locale;
 import java.util.stream.Collectors;
 
 public class InterfaceEndpointFinder implements PatternUploadEndpointFinder {
+
+    private static final String MMCE_PATTERN_PROVIDER_CLASS = "github.kasuminova.mmce.common.tile.MEPatternProvider";
 
     private static final String[] AE_NAMESPACES = {
             "appliedenergistics2:",
@@ -69,7 +73,7 @@ public class InterfaceEndpointFinder implements PatternUploadEndpointFinder {
                     continue;
                 }
                 IGridHost machine = node.getMachine();
-                if (machine instanceof IInterfaceHost) {
+                if (machine instanceof IInterfaceHost && !isMMCEPatternProvider(machine)) {
                     IInterfaceHost host = (IInterfaceHost) machine;
                     InterfacePatternUploadEndpoint endpoint = new InterfacePatternUploadEndpoint(host, resolveGroupKey(host, encodedPattern));
                     if (endpoint.supportsPatternType(encodedPattern)) {
@@ -78,6 +82,10 @@ public class InterfaceEndpointFinder implements PatternUploadEndpointFinder {
                 }
             }
         }
+    }
+
+    private static boolean isMMCEPatternProvider(IGridHost machine) {
+        return Mods.MMCE.isLoaded() && MMCE_PATTERN_PROVIDER_CLASS.equals(machine.getClass().getName());
     }
 
     private static PatternUploadGroupKey resolveGroupKey(IInterfaceHost host, ItemStack encodedPattern) {
@@ -213,12 +221,13 @@ public class InterfaceEndpointFinder implements PatternUploadEndpointFinder {
     }
 
     private static ItemStack getBlockIcon(World world, BlockPos pos) {
-        Block block = world.getBlockState(pos).getBlock();
+        IBlockState state = world.getBlockState(pos);
+        Block block = state.getBlock();
         Item item = Item.getItemFromBlock(block);
         if (item == null) {
             return ItemStack.EMPTY;
         }
-        return PatternUploadGroupKey.sanitizeIcon(new ItemStack(item, 1, 0));
+        return PatternUploadGroupKey.sanitizeIcon(new ItemStack(item, 1, block.damageDropped(state)));
     }
 
     private static String getBlockRegistryName(World world, BlockPos pos, TileEntity tile) {
