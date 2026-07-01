@@ -10,6 +10,9 @@ Minecraft 1.12.2 Forge mod. Some useful small functions have been added, and som
 - **TOP Node Count Display** — Shows the number of AE2 grid nodes connected at current location
 - **Item Tooltip Enhancement** — When holding a wireless terminal, all item tooltips show ME network storage count, with `[Craftable]` if the item is craftable
 - **JEI Fluid Tooltip** — When holding a wireless terminal, JEI fluid tooltips show total amount of that fluid in ME network, with `[Craftable]` if the fluid is craftable
+- **Pattern Machine Type** — When transferring processing recipes from JEI, records the selected machine type on encoded patterns and shows it in the pattern tooltip
+- **Pattern Upload** — Right-click the AE2 pattern terminal encode button to encode and send pattern; a "Select destination" list lets you send the pattern directly to available ME Interfaces
+- **MMCE Pattern Provider Upload** — mmce Pattern upload can send encoded patterns directly to ME Pattern Providers, displaying the linked machine controller's icon and name when available
 
 ### Draconic Evolution + Baubles
 - **Teleport Charm** — Advanced teleport charm can be worn as Baubles accessory and opened via shortcut key to access GUI, with fuel validation
